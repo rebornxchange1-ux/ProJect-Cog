@@ -1,1 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generate Your Project — ProjectCog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --indigo:    #4B35C8;
+  --indigo-d:  #3826A8;
+  --indigo-l:  #6B57E0;
+  --navy:      #0F1628;
+  --yellow:    #F5C842;
+  --white:     #ffffff;
+  --off:       #F6F7FD;
+  --gray:      #64748b;
+  --gray-2:    #94a3b8;
+  --border:    #e2e8f0;
+  --green:     #10b981;
+  --bg-page:   #3826A8;
+  --radius-lg: 28px;
+  --radius:    16px;
+  --shadow:    0 8px 40px rgba(15,22,40,0.13);
+  --shadow-lg: 0 20px 72px rgba(15,22,40,0.18);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'DM Sans', sans-serif; background:var(--bg-page); color:var(--navy); min-height:100vh; }
+
+/* NAV */
+nav {
+  background:var(--white);
+  padding:0 5%;
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:999;
+  box-shadow:0 1px 0 var(--border);
+}
+.nav-logo {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+}
+.nav-logo-text {
+  font-family:'Instrument Serif', serif;
+  font-size:22px;
+  font-weight:400;
+  color:var(--navy);
+}
+.nav-logo-text span { color:var(--indigo); }
+.back-link {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--gray);
+  font-size:14px;
+  font-weight:600;
+  text-decoration:none;
+  transition:color .2s;
+  padding:9px 18px;
+  border-radius:10px;
+  border:1.5px solid var(--border);
+}
+.back-link:hover { color:var(--indigo); border-color:var(--indigo); }
+
+/* PAGE BG */
+.page-bg {
+  background:var(--bg-page);
+  padding:48px 5% 72px;
+}
+
+/* HERO CARD */
+.page-hero-card {
+  background:var(--navy);
+  border-radius:var(--radius-lg);
+  padding:52px 7%;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:20px;
+  box-shadow:var(--shadow-lg);
+}
+.page-hero-card::before {
+  content:'';
+  position:absolute;
+  top:-80px;
+  left:50%;
+  transform:translateX(-50%);
+  width:500px;
+  height:260px;
+  background:radial-gradient(ellipse, rgba(107,87,224,.2), transparent 70%);
+  pointer-events:none;
+}
+.page-hero-card h1 {
+  font-family:'Instrument Serif', serif;
+  font-size:clamp(26px, 3.5vw, 42px);
+  font-weight:400;
+  color:#fff;
+  margin-bottom:10px;
+  position:relative;
+}
+.page-hero-card h1 span { color:var(--yellow); font-style:italic; }
+.page-hero-card p {
+  color:rgba(255,255,255,.65);
+  font-size:15.5px;
+  position:relative;
+}
+
+/* STEPS INDICATOR */
+.steps-card {
+  background:var(--white);
+  border-radius:var(--radius);
+  padding:24px 7%;
+  margin-bottom:20px;
+  box-shadow:var(--shadow);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+}
+.si-step { display:flex; align-items:center; gap:10px; }
+.si-num {
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  font-weight:700;
+  transition:all .3s;
+}
+.si-num.done  { background:var(--green); color:#fff; }
+.si-num.active { background:var(--indigo); color:#fff; box-shadow:0 4px 14px rgba(75,53,200,.35); }
+.si-num.pending { background:var(--border); color:var(--gray-2); }
+.si-label { font-size:13px; font-weight:600; }
+.si-label.done    { color:var(--green); }
+.si-label.active  { color:var(--indigo); }
+.si-label.pending { color:var(--gray-2); }
+.si-line { width:48px; height:2px; background:var(--border); margin:0 6px; }
+.si-line.done { background:var(--green); }
+
+/* FORM WRAP */
+.form-wrap { max-width:840px; margin:0 auto; }
+
+/* FORM CARDS */
+.form-card {
+  background:var(--white);
+  border-radius:var(--radius);
+  padding:32px;
+  box-shadow:var(--shadow);
+  border:1.5px solid var(--border);
+  margin-bottom:20px;
+}
+.fc-title {
+  font-family:'Instrument Serif', serif;
+  font-size:19px;
+  font-weight:400;
+  color:var(--navy);
+  margin-bottom:5px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.fc-title i { color:var(--indigo); font-size:16px; }
+.fc-sub { color:var(--gray); font-size:13.5px; margin-bottom:24px; }
+
+/* TYPE CARDS */
+.type-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.type-card {
+  border:2px solid var(--border);
+  border-radius:14px;
+  padding:18px 16px;
+  cursor:pointer;
+  transition:all .2s;
+  background:var(--off);
+  position:relative;
+}
+.type-card:hover { border-color:rgba(75,53,200,.3); background:rgba(75,53,200,.03); }
+.type-card.selected {
+  border-color:var(--indigo);
+  background:rgba(75,53,200,.05);
+  box-shadow:0 0 0 3px rgba(75,53,200,.12);
+}
+.type-card input { display:none; }
+.tc-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:8px; }
+.tc-icon { font-size:26px; }
+.tc-price {
+  font-family:'Instrument Serif', serif;
+  font-size:16px;
+  font-weight:400;
+  color:var(--indigo);
+}
+.tc-name { font-size:14px; font-weight:600; color:var(--navy); margin-bottom:3px; }
+.tc-desc { font-size:12px; color:var(--gray); }
+.tc-check {
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:var(--indigo);
+  color:#fff;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+}
+.type-card.selected .tc-check { display:flex; }
+
+/* FORM FIELDS */
+.fg { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.fg.single { grid-template-columns:1fr; }
+.field { display:flex; flex-direction:column; gap:6px; }
+.field.full { grid-column:1/-1; }
+label { font-size:13px; font-weight:600; color:var(--navy); display:flex; align-items:center; gap:5px; }
+.req { color:var(--indigo); }
+input, select, textarea {
+  padding:12px 15px;
+  border:2px solid var(--border);
+  border-radius:10px;
+  font-size:14px;
+  font-family:'DM Sans', sans-serif;
+  color:var(--navy);
+  background:#fff;
+  transition:all .2s;
+  outline:none;
+  width:100%;
+}
+input:focus, select:focus, textarea:focus {
+  border-color:var(--indigo);
+  box-shadow:0 0 0 3px rgba(75,53,200,.09);
+}
+input::placeholder, textarea::placeholder { color:#b0bcc8; }
+select { cursor:pointer; }
+textarea { resize:vertical; min-height:84px; }
+
+.cond { display:none; grid-column:1/-1; }
+.cond.show { display:contents; }
+
+/* REFERRAL BOX */
+.ref-box {
+  background:rgba(75,53,200,.04);
+  border:2px dashed rgba(75,53,200,.22);
+  border-radius:12px;
+  padding:16px;
+}
+.ref-box label { color:var(--indigo); }
+.ref-box small { color:var(--gray); font-size:12px; margin-top:4px; display:block; }
+
+/* SUBMIT */
+.submit-wrap { margin-top:6px; }
+.submit-btn {
+  width:100%;
+  padding:16px;
+  background:var(--indigo);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-size:17px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  transition:all .2s;
+  font-family:'DM Sans', sans-serif;
+  box-shadow:0 8px 32px rgba(75,53,200,.3);
+}
+.submit-btn:hover { background:var(--indigo-d); transform:translateY(-2px); box-shadow:0 14px 40px rgba(75,53,200,.4); }
+.submit-btn:disabled { background:#d1d5db; cursor:not-allowed; transform:none; box-shadow:none; }
+.submit-note {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  font-size:13px;
+  color:var(--gray);
+  margin-top:12px;
+}
+.submit-note i { color:var(--green); }
+.err {
+  background:#fef2f2;
+  border:1px solid #fecaca;
+  color:#dc2626;
+  padding:12px 16px;
+  border-radius:10px;
+  font-size:13px;
+  display:none;
+  margin-top:12px;
+  align-items:center;
+  gap:9px;
+}
+.err.show { display:flex; }
+
+/* FOOTER */
+footer {
+  background:var(--navy);
+  padding:20px 5%;
+  text-align:center;
+  color:rgba(255,255,255,.4);
+  font-size:13px;
+}
+footer span { color:var(--indigo-l); }
+footer a { color:rgba(255,255,255,.4); text-decoration:none; transition:color .2s; }
+footer a:hover { color:var(--indigo-l); }
+
+@media(max-width:640px) {
+  .fg, .type-grid { grid-template-columns:1fr; }
+  .form-card { padding:22px 18px; }
+  .page-bg { padding:28px 4% 48px; }
+  .page-hero-card { padding:40px 5%; }
+  .steps-card { padding:20px 5%; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-text">Project<span>Cog</span></span>
+  </a>
+  <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
+</nav>
+
+<!-- PAGE BACKGROUND -->
+<div class="page-bg">
+
+  <!-- HERO -->
+  <div class="page-hero-card">
+    <h1>Generate Your <span>Academic Project</span></h1>
+    <p>Your free preview — preliminary pages and complete Chapter 1 — will be ready in under 60 seconds.</p>
+  </div>
+
+  <!-- STEPS INDICATOR -->
+  <div class="steps-card">
+    <div class="si-step">
+      <div class="si-num active">1</div>
+      <span class="si-label active">Project Type</span>
+    </div>
+    <div class="si-line"></div>
+    <div class="si-step">
+      <div class="si-num pending">2</div>
+      <span class="si-label pending">Your Details</span>
+    </div>
+    <div class="si-line"></div>
+    <div class="si-step">
+      <div class="si-num pending">3</div>
+      <span class="si-label pending">Generate</span>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-wrap">
+    <form id="projForm">
+
+      <!-- PROJECT TYPE -->
+      <div class="form-card">
+        <div class="fc-title"><i class="fas fa-list-alt"></i> Select Your Project Type</div>
+        <div class="fc-sub">Choose the type of academic document you need generated.</div>
+        <div class="type-grid">
+          <label class="type-card" id="tc_fyp" onclick="pickType('final_year_project','tc_fyp')">
+            <input type="radio" name="ptype" value="final_year_project">
+            <div class="tc-top"><span class="tc-icon">🎓</span><span class="tc-price">₦10,500</span></div>
+            <div class="tc-name">Final Year Project</div>
+            <div class="tc-desc">Complete 5-chapter research project</div>
+            <span class="tc-check"><i class="fas fa-check"></i></span>
+          </label>
+          <label class="type-card" id="tc_siwes" onclick="pickType('siwes','tc_siwes')">
+            <input type="radio" name="ptype" value="siwes">
+            <div class="tc-top"><span class="tc-icon">🏭</span><span class="tc-price">₦7,500</span></div>
+            <div class="tc-name">SIWES Report</div>
+            <div class="tc-desc">Industrial training documentation</div>
+            <span class="tc-check"><i class="fas fa-check"></i></span>
+          </label>
+          <label class="type-card" id="tc_seminar" onclick="pickType('seminar','tc_seminar')">
+            <input type="radio" name="ptype" value="seminar">
+            <div class="tc-top"><span class="tc-icon">🎤</span><span class="tc-price">₦6,500</span></div>
+            <div class="tc-name">Seminar Paper</div>
+            <div class="tc-desc">Academic seminar presentation</div>
+            <span class="tc-check"><i class="fas fa-check"></i></span>
+          </label>
+          <label class="type-card" id="tc_term" onclick="pickType('term_paper','tc_term')">
+            <input type="radio" name="ptype" value="term_paper">
+            <div class="tc-top"><span class="tc-icon">📄</span><span class="tc-price">₦6,500</span></div>
+            <div class="tc-name">Term Paper</div>
+            <div class="tc-desc">Course analytical essay</div>
+            <span class="tc-check"><i class="fas fa-check"></i></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- PERSONAL DETAILS -->
+      <div class="form-card">
+        <div class="fc-title"><i class="fas fa-user-graduate"></i> Personal and Institution Details</div>
+        <div class="fc-sub">Enter your information exactly as it will appear on your project cover page.</div>
+        <div class="fg">
+          <div class="field"><label>Full Name <span class="req">*</span></label><input type="text" id="studentName" placeholder="e.g. Chukwuemeka Obi" required></div>
+          <div class="field"><label>Matric Number <span class="req">*</span></label><input type="text" id="matricNumber" placeholder="e.g. CSC/2019/042" required></div>
+          <div class="field"><label>Institution Type <span class="req">*</span></label>
+            <select id="institutionType" required onchange="handleInstType()">
+              <option value="">-- Select --</option>
+              <option value="university">University</option>
+              <option value="polytechnic">Polytechnic</option>
+              <option value="college_of_education">College of Education</option>
+            </select>
+          </div>
+          <div class="field"><label>Institution Name <span class="req">*</span></label><input type="text" id="institutionName" placeholder="e.g. University of Lagos" required></div>
+          <div class="field"><label>Department <span class="req">*</span></label><input type="text" id="department" placeholder="e.g. Computer Science" required></div>
+          <div class="field"><label>Programme <span class="req">*</span></label><input type="text" id="programme" placeholder="e.g. B.Sc Computer Science" required></div>
+          <div class="field"><label>Supervisor Name <span class="req">*</span></label><input type="text" id="supervisorName" placeholder="e.g. Dr. Adewale Bello" required></div>
+          <div class="field"><label>Academic Year <span class="req">*</span></label><input type="text" id="academicYear" placeholder="e.g. 2023/2024" required></div>
+          <div class="field full"><label>Project Topic / Title <span class="req">*</span></label><textarea id="projectTopic" rows="3" placeholder="Enter your complete project title here..." required></textarea></div>
+
+          <!-- FYP FIELDS -->
+          <div class="cond" id="fyp_fields">
+            <div class="field"><label>Faculty <span class="req">*</span></label><input type="text" id="faculty" placeholder="e.g. Science"></div>
+            <div class="field"><label>Project Category <span class="req">*</span></label>
+              <select id="category">
+                <option value="">-- Select Category --</option>
+                <option value="system_based">System Based (Software, Website, Database)</option>
+                <option value="theory_based">Theory Based (Research, Analysis)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- SIWES FIELDS -->
+          <div class="cond" id="siwes_fields">
+            <div class="field"><label>Organization / Company Name <span class="req">*</span></label><input type="text" id="organizationName" placeholder="e.g. Access Bank PLC, Lagos"></div>
+            <div class="field"><label>Duration of Training <span class="req">*</span></label><input type="text" id="duration" placeholder="e.g. June 2023 to December 2023"></div>
+          </div>
+
+          <!-- SEMINAR FIELDS -->
+          <div class="cond" id="seminar_fields">
+            <div class="field"><label>Course Title <span class="req">*</span></label><input type="text" id="courseTitle" placeholder="e.g. Research Methods in Computer Science"></div>
+            <div class="field"><label>Course Code <span class="req">*</span></label><input type="text" id="courseCode" placeholder="e.g. CSC 401"></div>
+            <div class="field full"><label>Lecturer Name <span class="req">*</span></label><input type="text" id="lecturerName" placeholder="e.g. Prof. Ibrahim Musa"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REFERRAL -->
+      <div class="form-card">
+        <div class="fc-title"><i class="fas fa-tag"></i> Referral Code <span style="font-size:13px;font-weight:500;color:var(--gray)">(Optional)</span></div>
+        <div class="fc-sub">Have a referral code? Enter it here to get ₦500 off your payment.</div>
+        <div class="ref-box">
+          <label>Referral Code</label>
+          <input type="text" id="referralCode" placeholder="Enter referral code for ₦500 discount" style="margin-top:8px">
+          <small>Don't have one? <a href="mailto:reborntechglobalsolutions@gmail.com?subject=ProjectCog Referral Code Request" style="color:var(--indigo);font-weight:600">Email us to get your code</a> and start earning rewards.</small>
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="submit-wrap">
+        <button type="submit" class="submit-btn" id="subBtn">
+          <i class="fas fa-bolt"></i> Generate My Free Preview Now
+        </button>
+        <div class="submit-note"><i class="fas fa-shield-alt"></i> Free preview includes preliminary pages and complete Chapter 1. No payment required at this stage.</div>
+        <div class="err" id="errMsg"><i class="fas fa-exclamation-circle"></i><span id="errTxt">Please fill in all required fields.</span></div>
+      </div>
+
+    </form>
+  </div>
+
+</div><!-- end .page-bg -->
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 ProjectCog. A product of <span>Reborn Tech Global Solutions</span> &nbsp;|&nbsp; <a href="https://wa.me/2348111689782">+234 811 168 9782</a></p>
+</footer>
+
+<script>
+const WEBHOOK_URL='https://chi-tech.app.n8n.cloud/webhook-test/projectcog';
+let selType='';
+
+function pickType(t,id){
+  selType=t;
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById(id).classList.add('selected');
+  showCond(t);
+}
+
+function showCond(t){
+  ['fyp_fields','siwes_fields','seminar_fields'].forEach(id=>{
+    document.getElementById(id).classList.remove('show');
+  });
+  if(t==='final_year_project') document.getElementById('fyp_fields').classList.add('show');
+  if(t==='siwes') document.getElementById('siwes_fields').classList.add('show');
+  if(t==='seminar'||t==='term_paper') document.getElementById('seminar_fields').classList.add('show');
+}
+
+function handleInstType(){
+  const v=document.getElementById('institutionType').value;
+  const p=document.getElementById('programme');
+  if(v==='polytechnic') p.placeholder='e.g. ND Computer Science / HND Computer Science';
+  else if(v==='college_of_education') p.placeholder='e.g. NCE Computer Science Education';
+  else p.placeholder='e.g. B.Sc Computer Science';
+}
+
+function g(id){return document.getElementById(id)?.value?.trim()||'';}
+
+function buildPayload(){
+  const payload={
+    studentName:g('studentName'),matricNumber:g('matricNumber'),
+    institutionType:g('institutionType'),institutionName:g('institutionName'),
+    department:g('department'),programme:g('programme'),
+    projectType:selType,projectTopic:g('projectTopic'),
+    supervisorName:g('supervisorName'),academicYear:g('academicYear'),
+    finalYearProject:null,siwes:null,seminar:null,
+    referralCode:g('referralCode')||null,paymentRef:null
+  };
+  if(selType==='final_year_project') payload.finalYearProject={faculty:g('faculty'),category:g('category')};
+  if(selType==='siwes') payload.siwes={organizationName:g('organizationName'),duration:g('duration')};
+  if(selType==='seminar'||selType==='term_paper') payload.seminar={courseTitle:g('courseTitle'),courseCode:g('courseCode'),lecturerName:g('lecturerName')};
+  return payload;
+}
+
+function showErr(msg){
+  const el=document.getElementById('errMsg');
+  document.getElementById('errTxt').textContent=msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),5000);
+}
+
+function validate(p){
+  if(!selType) return 'Please select a project type.';
+  if(!p.studentName) return 'Please enter your full name.';
+  if(!p.matricNumber) return 'Please enter your matric number.';
+  if(!p.institutionType) return 'Please select your institution type.';
+  if(!p.institutionName) return 'Please enter your institution name.';
+  if(!p.department) return 'Please enter your department.';
+  if(!p.programme) return 'Please enter your programme.';
+  if(!p.projectTopic) return 'Please enter your project topic.';
+  if(!p.supervisorName) return 'Please enter your supervisor name.';
+  if(!p.academicYear) return 'Please enter your academic year.';
+  return null;
+}
+
+document.getElementById('projForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  const payload=buildPayload();
+  const err=validate(payload);
+  if(err){showErr(err);return;}
+  localStorage.setItem('projectcog_payload',JSON.stringify(payload));
+  window.location.href='processing.html';
+});
+</script>
+</body>
+</html>
 
