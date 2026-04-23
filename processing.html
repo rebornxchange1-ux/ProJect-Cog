@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generating Your Project – ProjectCog</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fraunces:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--navy:#0f1628;--orange:#f05a1a;--orange-2:#ff6b2b;--green:#10b981;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--navy);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;position:relative;overflow:hidden;}
+body::before{content:'';position:absolute;top:-160px;right:-160px;width:560px;height:560px;background:radial-gradient(circle,rgba(240,90,26,.1),transparent 70%);border-radius:50%;}
+body::after{content:'';position:absolute;bottom:-120px;left:-120px;width:400px;height:400px;background:radial-gradient(circle,rgba(240,90,26,.07),transparent 70%);border-radius:50%;}
+
+.container{max-width:540px;width:100%;text-align:center;position:relative;z-index:1;}
+
+.logo-area{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:48px;}
+.logo-text{font-family:'Fraunces',serif;font-size:26px;font-weight:800;color:#fff;}
+.logo-text span{color:var(--orange);}
+
+.spinner-outer{width:130px;height:130px;position:relative;margin:0 auto 36px;}
+.ring{position:absolute;inset:0;border-radius:50%;border:3px solid transparent;animation:spin 1.4s linear infinite;}
+.ring:nth-child(1){border-top-color:var(--orange);animation-duration:1.2s;}
+.ring:nth-child(2){inset:12px;border-right-color:rgba(240,90,26,.45);animation-duration:1.9s;animation-direction:reverse;}
+.ring:nth-child(3){inset:24px;border-bottom-color:rgba(240,90,26,.25);animation-duration:2.6s;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ring-center{position:absolute;inset:36px;background:rgba(240,90,26,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+
+.main-h{font-family:'Fraunces',serif;font-size:28px;font-weight:800;margin-bottom:10px;}
+.status{font-size:15.5px;color:rgba(255,255,255,.65);margin-bottom:36px;min-height:24px;transition:all .4s;}
+
+.steps-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:22px;text-align:left;margin-bottom:28px;}
+.s-item{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.s-item:last-child{border-bottom:none;}
+.s-ind{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:all .45s;}
+.s-ind.wait{background:rgba(255,255,255,.07);color:rgba(255,255,255,.25);}
+.s-ind.load{background:rgba(240,90,26,.15);color:var(--orange);animation:stepP 1s ease-in-out infinite;}
+.s-ind.done{background:rgba(16,185,129,.15);color:var(--green);}
+@keyframes stepP{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
+.s-name{font-size:13.5px;font-weight:700;color:#fff;margin-bottom:2px;}
+.s-detail{font-size:12px;color:rgba(255,255,255,.4);}
+
+.prog-wrap{background:rgba(255,255,255,.07);border-radius:100px;height:7px;overflow:hidden;margin-bottom:10px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-2));border-radius:100px;transition:width 1.5s ease;width:0%;}
+.prog-pct{font-size:13px;color:rgba(255,255,255,.4);text-align:right;margin-bottom:28px;}
+.prog-pct span{color:var(--orange);font-weight:700;}
+.note{font-size:13px;color:rgba(255,255,255,.35);line-height:1.65;}
+.note i{color:var(--orange);}
+
+.err-box{display:none;background:rgba(220,38,38,.09);border:1px solid rgba(220,38,38,.25);border-radius:12px;padding:18px;margin-top:20px;color:#fca5a5;font-size:13.5px;line-height:1.65;}
+.err-box.show{display:block;}
+.err-box a{color:var(--orange);font-weight:700;text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="logo-area">
+    <div class="logo-text">Project<span>Cog</span></div>
+  </div>
+
+  <div class="spinner-outer">
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring-center">⚙️</div>
+  </div>
+
+  <h1 class="main-h">Generating Your Project</h1>
+  <p class="status" id="statusTxt">Connecting to ProjectCog AI...</p>
+
+  <div class="steps-box">
+    <div class="s-item">
+      <div class="s-ind wait" id="s1"><i class="fas fa-paper-plane"></i></div>
+      <div><div class="s-name">Sending Your Details</div><div class="s-detail">Transmitting student information securely</div></div>
+    </div>
+    <div class="s-item">
+      <div class="s-ind wait" id="s2"><i class="fas fa-check-double"></i></div>
+      <div><div class="s-name">Validating Information</div><div class="s-detail">Verifying all required fields are correct</div></div>
+    </div>
+    <div class="s-item">
+      <div class="s-ind wait" id="s3"><i class="fas fa-search"></i></div>
+      <div><div class="s-name">Fetching Academic Research</div><div class="s-detail">Gathering relevant data for your topic</div></div>
+    </div>
+    <div class="s-item">
+      <div class="s-ind wait" id="s4"><i class="fas fa-pen-fancy"></i></div>
+      <div><div class="s-name">Writing Your Project</div><div class="s-detail">AI generating submission-ready academic content</div></div>
+    </div>
+    <div class="s-item">
+      <div class="s-ind wait" id="s5"><i class="fas fa-file-alt"></i></div>
+      <div><div class="s-name">Preparing Your Preview</div><div class="s-detail">Formatting Chapter 1 and Preliminary Pages</div></div>
+    </div>
+  </div>
+
+  <div class="prog-wrap"><div class="prog-fill" id="pFill"></div></div>
+  <div class="prog-pct">Progress: <span id="pPct">0%</span></div>
+  <p class="note"><i class="fas fa-clock"></i> This usually takes 30 to 60 seconds. Please do not close this page.</p>
+
+  <div class="err-box" id="errBox">
+    <strong>Something went wrong.</strong><br>
+    We could not generate your project. Please <a href="generate.html">go back and try again</a>. For support contact <a href="mailto:reborntechglobalsolutions@gmail.com">reborntechglobalsolutions@gmail.com</a> or <a href="https://wa.me/2348111689782">WhatsApp us</a>.
+  </div>
+
+</div>
+<script>
+const WEBHOOK_URL='https://chi-tech.app.n8n.cloud/webhook-test/projectcog';
+
+function si(id,state){
+  const el=document.getElementById(id);
+  el.className='s-ind '+state;
+  if(state==='done') el.innerHTML='<i class="fas fa-check"></i>';
+  else if(state==='load') el.innerHTML='<i class="fas fa-spinner fa-spin"></i>';
+}
+function sp(p){document.getElementById('pFill').style.width=p+'%';document.getElementById('pPct').textContent=p+'%';}
+function ss(t){document.getElementById('statusTxt').textContent=t;}
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function run(){
+  const ps=localStorage.getItem('projectcog_payload');
+  if(!ps){window.location.href='generate.html';return;}
+  const payload=JSON.parse(ps);
+
+  si('s1','load');ss('Sending your details to ProjectCog AI...');sp(10);
+  await delay(600);
+
+  try{
+    si('s1','done');si('s2','load');ss('Validating your information...');sp(25);
+    await delay(700);
+
+    const res=await fetch(WEBHOOK_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+
+    si('s2','done');si('s3','load');ss('Fetching research data for your topic...');sp(45);
+    await delay(900);
+
+    si('s3','done');si('s4','load');ss('AI is writing your academic project...');sp(70);
+
+    if(!res.ok) throw new Error('Server error: '+res.status);
+    const data=await res.json();
+
+    si('s4','done');si('s5','load');ss('Preparing your preview document...');sp(90);
+    await delay(700);
+
+    if(!data.generatedProject) throw new Error('No content received');
+
+    si('s5','done');sp(100);ss('Your project is ready! Redirecting...');
+    localStorage.setItem('projectcog_result',JSON.stringify(data));
+    await delay(1200);
+    window.location.href='result.html';
+
+  }catch(err){
+    console.error(err);
+    ss('Something went wrong. Please try again.');
+    document.getElementById('errBox').classList.add('show');
+    sp(0);
+  }
+}
+
+run();
+</script>
+</body>
+</html>
