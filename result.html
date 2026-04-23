@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Project Preview – ProjectCog</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--navy:#0f1628;--navy-2:#1a2540;--orange:#f05a1a;--orange-2:#ff6b2b;--off:#f5f7ff;--gray:#64748b;--gray-2:#94a3b8;--border:#e2e8f0;--green:#10b981;--shadow:0 4px 24px rgba(15,22,40,.09);--shadow-lg:0 12px 52px rgba(15,22,40,.14);--shadow-orange:0 8px 28px rgba(240,90,26,.25);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--off);color:var(--navy);}
+
+.topbar{background:var(--orange);color:#fff;text-align:center;padding:9px;font-size:12.5px;font-weight:600;}
+nav{background:#fff;border-bottom:1px solid var(--border);padding:0 6%;height:74px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99;box-shadow:0 2px 12px rgba(15,22,40,.07);}
+.nav-logo{display:flex;align-items:center;gap:11px;text-decoration:none;}
+.logo-text{font-family:'Fraunces',serif;font-size:24px;font-weight:800;color:var(--navy);}
+.logo-text span{color:var(--orange);}
+
+.success-bar{background:linear-gradient(90deg,#059669,#10b981);color:#fff;padding:14px 6%;display:flex;align-items:center;justify-content:center;gap:12px;font-size:14.5px;font-weight:700;}
+
+.result-wrap{display:grid;grid-template-columns:1fr 360px;gap:26px;max-width:1200px;margin:0 auto;padding:32px 6%;}
+
+.doc-header{background:#fff;border-radius:16px;padding:22px 26px;box-shadow:var(--shadow);border:2px solid var(--border);margin-bottom:18px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.doc-title{font-family:'Fraunces',serif;font-size:19px;font-weight:800;color:var(--navy);margin-bottom:8px;}
+.doc-metas{display:flex;gap:14px;flex-wrap:wrap;}
+.dm{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray);}
+.dm i{color:var(--orange);font-size:12px;}
+.free-tag{background:rgba(240,90,26,.09);color:var(--orange);border:1px solid rgba(240,90,26,.18);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:800;letter-spacing:.04em;white-space:nowrap;}
+
+.doc-box{background:#fff;border-radius:16px;box-shadow:var(--shadow);border:2px solid var(--border);overflow:hidden;}
+.doc-inner{padding:40px;font-family:'Times New Roman',Georgia,serif;font-size:15px;line-height:1.9;color:#111;max-height:640px;overflow-y:auto;}
+.doc-inner::-webkit-scrollbar{width:5px;}
+.doc-inner::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px;}
+.doc-inner h1,.doc-inner h2,.doc-inner h3{font-family:'Times New Roman',serif;text-align:center;text-transform:uppercase;margin:18px 0 12px;letter-spacing:.03em;}
+.doc-inner h1{font-size:15px;font-weight:700;}
+.doc-inner h2{font-size:14.5px;font-weight:700;}
+.doc-inner h3{font-size:14px;font-weight:600;text-align:left;}
+.doc-inner p{margin-bottom:14px;text-align:justify;}
+.doc-inner strong{font-weight:700;}
+.doc-inner hr{border:none;border-top:1px solid #ddd;margin:20px 0;}
+
+.lock-fade{position:relative;margin-top:-100px;padding-top:100px;background:linear-gradient(to bottom,transparent,rgba(245,247,255,.97) 35%,var(--off) 100%);border-radius:0 0 14px 14px;padding-bottom:36px;text-align:center;}
+.lock-icon-wrap{width:62px;height:62px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px;color:var(--orange);}
+.lock-title{font-family:'Fraunces',serif;font-size:21px;font-weight:800;color:var(--navy);margin-bottom:8px;}
+.lock-sub{color:var(--gray);font-size:13.5px;margin-bottom:18px;max-width:360px;margin-left:auto;margin-right:auto;line-height:1.65;}
+.lock-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:22px;}
+.chip{background:rgba(240,90,26,.07);border:1px solid rgba(240,90,26,.15);color:var(--orange);padding:5px 13px;border-radius:100px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;}
+
+.pay-card{background:var(--navy);border-radius:20px;padding:26px;border:2px solid rgba(240,90,26,.25);box-shadow:var(--shadow-lg);position:sticky;top:90px;}
+.pay-card-head{text-align:center;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:20px;}
+.pay-card-head h3{font-family:'Fraunces',serif;font-size:19px;font-weight:800;color:#fff;margin-bottom:8px;}
+.pay-amount{font-family:'Fraunces',serif;font-size:46px;font-weight:800;color:var(--orange);line-height:1;margin-bottom:5px;}
+.pay-amount sup{font-size:20px;vertical-align:top;margin-top:10px;display:inline-block;}
+.pay-note-sm{font-size:12.5px;color:rgba(255,255,255,.45);}
+.disc-badge{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#34d399;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;text-align:center;margin-bottom:18px;display:none;}
+.disc-badge.show{display:block;}
+.pay-feats{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:22px;}
+.pay-feats li{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:rgba(255,255,255,.7);line-height:1.5;}
+.pay-feats li i{color:var(--green);font-size:13px;margin-top:2px;flex-shrink:0;}
+
+.pay-btn{width:100%;padding:15px;background:var(--orange);color:#fff;border:none;border-radius:11px;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:var(--shadow-orange);margin-bottom:10px;text-decoration:none;}
+.pay-btn:hover{background:var(--orange-2);transform:translateY(-2px);box-shadow:0 14px 40px rgba(240,90,26,.38);}
+.sec-note{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:rgba(255,255,255,.35);}
+.sec-note i{color:var(--green);}
+
+.divider{border:none;border-top:1px solid rgba(255,255,255,.07);margin:18px 0;}
+
+.ref-label{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.ref-row{display:flex;gap:8px;}
+.ref-row input{flex:1;padding:10px 12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;}
+.ref-row input::placeholder{color:rgba(255,255,255,.25);}
+.ref-row input:focus{border-color:var(--orange);}
+.ref-apply{padding:10px 15px;background:rgba(240,90,26,.18);border:1px solid rgba(240,90,26,.3);color:var(--orange);border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;}
+.ref-apply:hover{background:rgba(240,90,26,.28);}
+
+.dl-section{margin-top:14px;}
+.dl-label{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:9px;text-align:center;}
+.dl-btns{display:flex;gap:8px;}
+.dl-btn{flex:1;padding:10px 8px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;border:none;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.dl-pdf{background:rgba(220,38,38,.15);color:#f87171;border:1px solid rgba(220,38,38,.2);}
+.dl-pdf:hover{background:rgba(220,38,38,.25);}
+.dl-word{background:rgba(37,99,235,.15);color:#93c5fd;border:1px solid rgba(37,99,235,.2);}
+.dl-word:hover{background:rgba(37,99,235,.25);}
+.dl-locked-note{font-size:11.5px;color:rgba(255,255,255,.3);text-align:center;margin-top:7px;}
+
+.share-area{margin-top:14px;text-align:center;}
+.share-area p{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:9px;}
+.share-row{display:flex;gap:8px;justify-content:center;}
+.s-btn{padding:9px 14px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;gap:6px;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.s-wa{background:rgba(37,211,102,.13);color:#25d366;}
+.s-copy{background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);}
+.s-btn:hover{transform:translateY(-2px);}
+
+.new-proj{display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:var(--navy);padding:12px;border-radius:10px;font-size:13.5px;font-weight:700;text-decoration:none;margin-top:12px;border:2px solid var(--border);transition:all .2s;}
+.new-proj:hover{border-color:var(--orange);color:var(--orange);}
+
+@media(max-width:900px){.result-wrap{grid-template-columns:1fr;}.pay-card{position:static;}.doc-inner{padding:22px;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">🎓 A Product of Reborn Tech Global Solutions | Nigeria's #1 Academic Project Generator</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="logo-text">Project<span>Cog</span></span>
+  </a>
+  <span style="font-size:13px;color:var(--gray)">Need help? <a href="https://wa.me/2348111689782" style="color:var(--orange);font-weight:700">WhatsApp Us</a></span>
+</nav>
+
+<div class="success-bar">
+  <i class="fas fa-check-circle" style="font-size:18px"></i>
+  Your free preview is ready! Preliminary pages + complete Chapter 1 generated successfully.
+</div>
+
+<div class="result-wrap">
+
+  <div>
+    <div class="doc-header">
+      <div>
+        <div class="doc-title" id="docTitle">Your Academic Project Preview</div>
+        <div class="doc-metas">
+          <span class="dm"><i class="fas fa-user"></i><span id="metaName">—</span></span>
+          <span class="dm"><i class="fas fa-university"></i><span id="metaInst">—</span></span>
+          <span class="dm"><i class="fas fa-bookmark"></i><span id="metaType">—</span></span>
+        </div>
+      </div>
+      <span class="free-tag">FREE PREVIEW</span>
+    </div>
+
+    <div class="doc-box">
+      <div class="doc-inner" id="docContent">
+        <p style="text-align:center;color:#9ca3af;padding:40px 0">Loading your project...</p>
+      </div>
+      <div class="lock-fade">
+        <div class="lock-icon-wrap">🔒</div>
+        <div class="lock-title">Unlock Your Full Document</div>
+        <div class="lock-sub">You have seen the quality. The complete document is ready. Pay once and get everything instantly.</div>
+        <div class="lock-chips">
+          <span class="chip"><i class="fas fa-lock"></i> Chapter 2: Literature Review</span>
+          <span class="chip"><i class="fas fa-lock"></i> Chapter 3: Methodology</span>
+          <span class="chip"><i class="fas fa-lock"></i> Chapter 4: Analysis</span>
+          <span class="chip"><i class="fas fa-lock"></i> Chapter 5: Conclusion</span>
+          <span class="chip"><i class="fas fa-lock"></i> References</span>
+          <span class="chip"><i class="fas fa-lock"></i> Defense Tips</span>
+        </div>
+        <a class="pay-btn" id="lockPayBtn" href="#" style="max-width:320px;margin:0 auto" onclick="goToPayment(event)">
+          <i class="fas fa-unlock"></i> Unlock Full Project Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="pay-card" id="paymentCard">
+      <div class="pay-card-head">
+        <h3>Unlock Full Project</h3>
+        <div class="pay-amount" id="payAmt"><sup>₦</sup>10,500</div>
+        <div class="pay-note-sm">One-time payment · No subscription</div>
+      </div>
+
+      <div class="disc-badge" id="discBadge">🎉 ₦500 referral discount applied!</div>
+
+      <ul class="pay-feats" id="payFeats">
+        <li><i class="fas fa-check-circle"></i> Chapter 2: Literature Review</li>
+        <li><i class="fas fa-check-circle"></i> Chapter 3: Research Methodology</li>
+        <li><i class="fas fa-check-circle"></i> Chapter 4: Data Presentation and Analysis</li>
+        <li><i class="fas fa-check-circle"></i> Chapter 5: Summary and Recommendations</li>
+        <li><i class="fas fa-check-circle"></i> Full References APA 7th 20+ sources</li>
+        <li><i class="fas fa-check-circle"></i> 15 Defense Questions and Model Answers</li>
+      </ul>
+
+      <a href="#" class="pay-btn" id="mainPayBtn" onclick="goToPayment(event)">
+        <i class="fas fa-lock-open"></i> Pay and Unlock Now
+      </a>
+      <div class="sec-note"><i class="fas fa-shield-alt"></i> Secured by Paystack · Safe and Instant</div>
+
+      <hr class="divider">
+
+      <div class="ref-label"><i class="fas fa-tag"></i> Apply referral code for ₦500 off</div>
+      <div class="ref-row">
+        <input type="text" id="refInput" placeholder="Enter code">
+        <button class="ref-apply" onclick="applyRef()">Apply</button>
+      </div>
+
+      <hr class="divider">
+
+      <div class="dl-section">
+        <div class="dl-label">Download your complete project</div>
+        <div class="dl-btns">
+          <button class="dl-btn dl-pdf" onclick="dlPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+          <button class="dl-btn dl-word" onclick="dlWord()"><i class="fas fa-file-word"></i> Word</button>
+        </div>
+        <div class="dl-locked-note" id="dlNote">🔒 Download available after payment</div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="share-area">
+        <p>Share and earn referral rewards</p>
+        <div class="share-row">
+          <button class="s-btn s-wa" onclick="shareWA()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+          <button class="s-btn s-copy" onclick="copyLink()"><i class="fas fa-link"></i> Copy Link</button>
+        </div>
+      </div>
+
+      <a href="generate.html" class="new-proj"><i class="fas fa-plus"></i> Generate Another Project</a>
+    </div>
+  </div>
+
+</div>
+
+<footer style="background:var(--navy);padding:20px 6%;text-align:center;color:rgba(255,255,255,.35);font-size:13px;margin-top:20px">
+  <p>© 2026 ProjectCog · <span style="color:var(--orange)">Reborn Tech Global Solutions</span> · <a href="mailto:reborntechglobalsolutions@gmail.com" style="color:rgba(255,255,255,.35)">reborntechglobalsolutions@gmail.com</a> · <a href="https://wa.me/2348111689782" style="color:rgba(255,255,255,.35)">+234 811 168 9782</a></p>
+</footer>
+
+<script>
+const PAYMENT_LINKS={
+  final_year_project:'https://paystack.shop/pay/jqr4kj219s',
+  siwes:'https://paystack.shop/pay/8wvewhgb8z',
+  seminar:'https://paystack.shop/pay/5sx10pb8lk',
+  term_paper:'https://paystack.shop/pay/5sx10pb8lk'
+};
+const PRICES={final_year_project:10500,siwes:7500,seminar:6500,term_paper:6500};
+const TYPE_LABELS={final_year_project:'Final Year Project',siwes:'SIWES Report',seminar:'Seminar Paper',term_paper:'Term Paper'};
+const FEATS={
+  final_year_project:['Chapter 2: Literature Review','Chapter 3: Research Methodology','Chapter 4: Data Presentation and Analysis','Chapter 5: Summary, Conclusion and Recommendations','Full References APA 7th 20+ sources','Appendices and Research Instruments','15 Defense Questions with Model Answers'],
+  siwes:['Chapter 2: Industrial Training Activities Week Log','Chapter 3: Skills and Competencies Acquired','Chapter 4: Challenges Faced and Solutions','Chapter 5: Conclusion and Recommendations','Full References','10 SIWES Defense Questions with Model Answers'],
+  seminar:['Full Body Sections with Deep Academic Arguments','Counter-Arguments and Scholarly Debates','Conclusion and Recommendations','Full References APA 7th 15+ sources','Presentation Tips and Likely Questions','Guide to Scoring A Grade'],
+  term_paper:['Full Analytical Body Sections','Critical Evaluation and Arguments','Conclusion and Recommendations','Full References 10+ sources','Course Scoring Guide','A Grade Tips for This Paper']
+};
+
+let currentType='';
+let currentPrice=0;
+let discApplied=false;
+let generatedText='';
+
+function renderDoc(text){
+  let h=text
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/_{3,}/g,'<hr>')
+    .replace(/={3,}/g,'<hr>')
+    .replace(/\n\n/g,'</p><p>');
+  if(!h.startsWith('<')) h='<p>'+h+'</p>';
+  return h;
+}
+
+function updateFeats(type){
+  const list=document.getElementById('payFeats');
+  const items=FEATS[type]||FEATS.final_year_project;
+  list.innerHTML=items.map(f=>`<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('');
+}
+
+function goToPayment(e){
+  e.preventDefault();
+  const link=PAYMENT_LINKS[currentType]||PAYMENT_LINKS.final_year_project;
+  window.open(link,'_blank');
+}
+
+function applyRef(){
+  const code=document.getElementById('refInput').value.trim();
+  if(!code){alert('Please enter a referral code.');return;}
+  if(discApplied){alert('A referral code has already been applied.');return;}
+  discApplied=true;
+  currentPrice-=500;
+  document.getElementById('payAmt').innerHTML='<sup>₦</sup>'+currentPrice.toLocaleString();
+  document.getElementById('discBadge').classList.add('show');
+  alert('Referral code applied! ₦500 discount added.');
+}
+
+function dlPDF(){
+  if(!discApplied&&currentPrice===PRICES[currentType]){
+    alert('Please complete payment first to download your full project.\n\nClick Pay and Unlock Now to proceed.');
+    return;
+  }
+  alert('Your PDF will be sent to your email after payment confirmation.\n\nContact: reborntechglobalsolutions@gmail.com');
+}
+
+function dlWord(){
+  alert('Your complete Word document will be sent to your email after payment confirmation.\n\nContact us at reborntechglobalsolutions@gmail.com with your payment reference.');
+}
+
+function shareWA(){
+  const txt=encodeURIComponent('I just used ProjectCog to generate my academic project preview for FREE! 🎓\n\nTry it at: https://projectcog.com.ng\n\nNigerian students this is a game changer!');
+  window.open('https://wa.me/?text='+txt,'_blank');
+}
+
+function copyLink(){
+  navigator.clipboard.writeText('https://projectcog.com.ng').then(()=>alert('Link copied! Share with your classmates.'));
+}
+
+function init(){
+  const rs=localStorage.getItem('projectcog_result');
+  if(!rs){window.location.href='generate.html';return;}
+  const data=JSON.parse(rs);
+  currentType=data.projectType||'final_year_project';
+  currentPrice=PRICES[currentType]||10500;
+  generatedText=data.generatedProject||'';
+
+  document.getElementById('docTitle').textContent=(TYPE_LABELS[currentType]||'Academic Project')+' — Free Preview';
+  document.getElementById('metaName').textContent=data.studentName||'—';
+  document.getElementById('metaType').textContent=TYPE_LABELS[currentType]||'—';
+  document.getElementById('payAmt').innerHTML='<sup>₦</sup>'+currentPrice.toLocaleString();
+
+  const ps=localStorage.getItem('projectcog_payload');
+  if(ps){
+    const p=JSON.parse(ps);
+    document.getElementById('metaInst').textContent=p.institutionName||'—';
+    if(p.referralCode){
+      document.getElementById('refInput').value=p.referralCode;
+      applyRef();
+    }
+  }
+
+  updateFeats(currentType);
+
+  if(generatedText){
+    document.getElementById('docContent').innerHTML=renderDoc(generatedText);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
