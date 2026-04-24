@@ -20,7 +20,7 @@
   --gray-2:    #94a3b8;
   --border:    #e2e8f0;
   --green:     #10b981;
-  --bg-page:   #3826A8;
+  --bg-page:   #ffffff;
   --radius-lg: 28px;
   --radius:    16px;
   --shadow:    0 8px 40px rgba(15,22,40,0.13);
@@ -28,7 +28,7 @@
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; }
-body { font-family:'DM Sans', sans-serif; background:var(--bg-page); color:var(--navy); min-height:100vh; }
+body { font-family:'DM Sans', sans-serif; background:#ffffff; color:var(--navy); min-height:100vh; }
 
 /* NAV */
 nav {
@@ -73,20 +73,19 @@ nav {
 
 /* PAGE BG */
 .page-bg {
-  background:var(--bg-page);
-  padding:48px 5% 72px;
+  background:#ffffff;
+  padding:40px 5% 72px;
 }
 
 /* HERO CARD */
 .page-hero-card {
-  background:var(--navy);
-  border-radius:var(--radius-lg);
-  padding:52px 7%;
+  background:var(--indigo);
+  border-radius:12px;
+  padding:40px 7%;
   text-align:center;
   position:relative;
   overflow:hidden;
-  margin-bottom:20px;
-  box-shadow:var(--shadow-lg);
+  margin-bottom:24px;
 }
 .page-hero-card::before {
   content:'';
@@ -96,31 +95,31 @@ nav {
   transform:translateX(-50%);
   width:500px;
   height:260px;
-  background:radial-gradient(ellipse, rgba(107,87,224,.2), transparent 70%);
+  background:radial-gradient(ellipse, rgba(255,255,255,.1), transparent 70%);
   pointer-events:none;
 }
 .page-hero-card h1 {
   font-family:'Instrument Serif', serif;
-  font-size:clamp(26px, 3.5vw, 42px);
+  font-size:clamp(24px, 3vw, 38px);
   font-weight:400;
   color:#fff;
-  margin-bottom:10px;
+  margin-bottom:8px;
   position:relative;
 }
 .page-hero-card h1 span { color:var(--yellow); font-style:italic; }
 .page-hero-card p {
-  color:rgba(255,255,255,.65);
-  font-size:15.5px;
+  color:rgba(255,255,255,.75);
+  font-size:15px;
   position:relative;
 }
 
 /* STEPS INDICATOR */
 .steps-card {
-  background:var(--white);
-  border-radius:var(--radius);
-  padding:24px 7%;
-  margin-bottom:20px;
-  box-shadow:var(--shadow);
+  background:var(--off);
+  border-radius:12px;
+  padding:20px 7%;
+  margin-bottom:24px;
+  border:1.5px solid var(--border);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -154,11 +153,10 @@ nav {
 /* FORM CARDS */
 .form-card {
   background:var(--white);
-  border-radius:var(--radius);
+  border-radius:12px;
   padding:32px;
-  box-shadow:var(--shadow);
   border:1.5px solid var(--border);
-  margin-bottom:20px;
+  margin-bottom:16px;
 }
 .fc-title {
   font-family:'Instrument Serif', serif;
@@ -246,6 +244,70 @@ textarea { resize:vertical; min-height:84px; }
 
 .cond { display:none; grid-column:1/-1; }
 .cond.show { display:contents; }
+
+/* CASE STUDY UPLOAD */
+.upload-box {
+  border:2px dashed var(--border);
+  border-radius:12px;
+  padding:28px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  background:var(--off);
+  position:relative;
+}
+.upload-box:hover { border-color:var(--indigo); background:rgba(75,53,200,.03); }
+.upload-box.has-file { border-color:var(--green); background:rgba(16,185,129,.04); }
+.upload-box input[type="file"] {
+  position:absolute;
+  inset:0;
+  opacity:0;
+  cursor:pointer;
+  width:100%;
+  height:100%;
+}
+.upload-icon {
+  width:48px;
+  height:48px;
+  background:rgba(75,53,200,.08);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--indigo);
+  font-size:20px;
+  margin:0 auto 12px;
+}
+.upload-box.has-file .upload-icon { background:rgba(16,185,129,.1); color:var(--green); }
+.upload-title { font-size:14px; font-weight:600; color:var(--navy); margin-bottom:4px; }
+.upload-sub { font-size:12.5px; color:var(--gray); }
+.upload-file-name {
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:10px;
+  background:#fff;
+  border:1px solid var(--green);
+  border-radius:8px;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:600;
+  color:var(--green);
+}
+.upload-file-name.show { display:flex; }
+.upload-file-name i { font-size:14px; }
+.upload-remove {
+  background:none;
+  border:none;
+  color:var(--gray);
+  cursor:pointer;
+  font-size:14px;
+  margin-left:6px;
+  padding:0;
+  transition:color .2s;
+}
+.upload-remove:hover { color:#dc2626; }
 
 /* REFERRAL BOX */
 .ref-box {
@@ -433,6 +495,11 @@ footer a:hover { color:var(--indigo-l); }
                 <option value="theory_based">Theory Based (Research, Analysis)</option>
               </select>
             </div>
+            <div class="field full">
+              <label>Case Study <span style="font-size:12px;font-weight:500;color:var(--gray-2)">(Optional)</span></label>
+              <textarea id="caseStudy" rows="6" placeholder="Paste or type your case study here. The AI will use this to write your project around real data, scenarios, or findings specific to your research..."></textarea>
+              <small style="font-size:12px;color:var(--gray-2);margin-top:6px;display:block;">Providing a case study helps the AI produce a more specific, realistic, and supervisor-approved project tailored to your actual research context.</small>
+            </div>
           </div>
 
           <!-- SIWES FIELDS -->
@@ -520,7 +587,7 @@ function buildPayload(){
     finalYearProject:null,siwes:null,seminar:null,
     referralCode:g('referralCode')||null,paymentRef:null
   };
-  if(selType==='final_year_project') payload.finalYearProject={faculty:g('faculty'),category:g('category')};
+  if(selType==='final_year_project') payload.finalYearProject={faculty:g('faculty'),category:g('category'),caseStudy:g('caseStudy')||null};
   if(selType==='siwes') payload.siwes={organizationName:g('organizationName'),duration:g('duration')};
   if(selType==='seminar'||selType==='term_paper') payload.seminar={courseTitle:g('courseTitle'),courseCode:g('courseCode'),lecturerName:g('lecturerName')};
   return payload;
@@ -558,4 +625,3 @@ document.getElementById('projForm').addEventListener('submit',function(e){
 </script>
 </body>
 </html>
-
