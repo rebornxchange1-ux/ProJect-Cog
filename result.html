@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Project Preview — ProjectCog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --navy:      #0F1628;
+  --indigo:    #4B35C8;
+  --indigo-d:  #3826A8;
+  --indigo-l:  #6B57E0;
+  --yellow:    #F5C842;
+  --white:     #ffffff;
+  --off:       #F6F7FD;
+  --gray:      #64748b;
+  --gray-2:    #94a3b8;
+  --border:    #e2e8f0;
+  --green:     #10b981;
+  --bg-page:   #3826A8;
+  --shadow:    0 8px 40px rgba(15,22,40,0.13);
+  --shadow-lg: 0 20px 72px rgba(15,22,40,0.18);
+  --shadow-ind:0 8px 28px rgba(75,53,200,.28);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-page);
+  color: var(--navy);
+}
+
+/* NAV */
+nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 5%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  box-shadow: 0 1px 0 var(--border);
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.nav-logo-text {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--navy);
+}
+.nav-logo-text span { color: var(--indigo); }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.nav-link {
+  font-size: 13.5px;
+  color: var(--gray);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color .2s;
+}
+.nav-link:hover { color: var(--navy); }
+.nav-cta {
+  background: var(--indigo);
+  color: var(--white);
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 9px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background .2s;
+  box-shadow: var(--shadow-ind);
+}
+.nav-cta:hover { background: var(--indigo-d); }
+
+/* SUCCESS BANNER */
+.success-bar {
+  background: linear-gradient(90deg, #059669, #10b981);
+  color: #fff;
+  padding: 13px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.success-bar i { font-size: 17px; }
+
+/* PAGE LAYOUT */
+.result-wrap {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 22px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 5% 60px;
+}
+
+/* DOCUMENT HEADER */
+.doc-header {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  border: 1.5px solid var(--border);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.doc-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 19px;
+  font-weight: 400;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.doc-metas { display: flex; gap: 14px; flex-wrap: wrap; }
+.dm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--gray);
+}
+.dm i { color: var(--indigo); font-size: 12px; }
+.free-tag {
+  background: rgba(75,53,200,.09);
+  color: var(--indigo);
+  border: 1px solid rgba(75,53,200,.18);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+
+/* DOCUMENT BOX */
+.doc-box {
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 1.5px solid var(--border);
+  overflow: hidden;
+}
+.doc-inner {
+  padding: 40px;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 15px;
+  line-height: 1.9;
+  color: #111;
+  max-height: 640px;
+  overflow-y: auto;
+}
+.doc-inner::-webkit-scrollbar { width: 5px; }
+.doc-inner::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+.doc-inner h1, .doc-inner h2, .doc-inner h3 {
+  font-family: 'Times New Roman', serif;
+  text-align: center;
+  text-transform: uppercase;
+  margin: 18px 0 12px;
+  letter-spacing: .03em;
+}
+.doc-inner h1 { font-size: 15px; font-weight: 700; }
+.doc-inner h2 { font-size: 14.5px; font-weight: 700; }
+.doc-inner h3 { font-size: 14px; font-weight: 600; text-align: left; }
+.doc-inner p  { margin-bottom: 14px; text-align: justify; }
+.doc-inner strong { font-weight: 700; }
+.doc-inner hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+
+/* LOCK OVERLAY */
+.lock-fade {
+  position: relative;
+  margin-top: -100px;
+  padding-top: 100px;
+  background: linear-gradient(to bottom, transparent, rgba(246,247,253,.97) 35%, var(--off) 100%);
+  border-radius: 0 0 14px 14px;
+  padding-bottom: 36px;
+  text-align: center;
+}
+.lock-icon-wrap {
+  width: 60px;
+  height: 60px;
+  background: var(--navy);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  color: var(--yellow);
+  font-size: 22px;
+}
+.lock-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.lock-sub {
+  color: var(--gray);
+  font-size: 13.5px;
+  margin-bottom: 18px;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.65;
+}
+.lock-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.chip {
+  background: rgba(75,53,200,.07);
+  border: 1px solid rgba(75,53,200,.15);
+  color: var(--indigo);
+  padding: 5px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* SIDEBAR CARD */
+.pay-card {
+  background: var(--navy);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1.5px solid rgba(107,87,224,.3);
+  box-shadow: var(--shadow-lg);
+  position: sticky;
+  top: 86px;
+}
+.pay-card-head {
+  text-align: center;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  margin-bottom: 18px;
+}
+.pay-card-head h3 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--white);
+  margin-bottom: 10px;
+}
+.pay-amount {
+  font-family: 'Instrument Serif', serif;
+  font-size: 48px;
+  font-weight: 400;
+  color: var(--yellow);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.pay-amount sup { font-size: 20px; vertical-align: top; margin-top: 10px; display: inline-block; }
+.pay-note-sm { font-size: 12px; color: rgba(255,255,255,.4); }
+
+.disc-badge {
+  background: rgba(16,185,129,.12);
+  border: 1px solid rgba(16,185,129,.25);
+  color: #34d399;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 18px;
+  display: none;
+}
+.disc-badge.show { display: block; }
+
+.pay-feats {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 20px;
+}
+.pay-feats li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13px;
+  color: rgba(255,255,255,.7);
+  line-height: 1.5;
+}
+.pay-feats li i { color: var(--green); font-size: 13px; margin-top: 2px; flex-shrink: 0; }
+
+/* PRIMARY CTA BUTTON */
+.pay-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--indigo);
+  color: var(--white);
+  border: none;
+  border-radius: 11px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  transition: background .2s, transform .2s, box-shadow .2s;
+  font-family: 'DM Sans', sans-serif;
+  box-shadow: 0 8px 28px rgba(75,53,200,.35);
+  margin-bottom: 10px;
+  text-decoration: none;
+}
+.pay-btn:hover {
+  background: var(--indigo-d);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(75,53,200,.45);
+}
+
+.sec-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,.32);
+}
+.sec-note i { color: var(--green); }
+
+.divider { border: none; border-top: 1px solid rgba(255,255,255,.07); margin: 16px 0; }
+
+/* REFERRAL */
+.ref-label {
+  font-size: 12px;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ref-row { display: flex; gap: 8px; }
+.ref-row input {
+  flex: 1;
+  padding: 10px 12px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  color: var(--white);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+}
+.ref-row input::placeholder { color: rgba(255,255,255,.22); }
+.ref-row input:focus { border-color: var(--indigo-l); }
+.ref-apply {
+  padding: 10px 14px;
+  background: rgba(107,87,224,.2);
+  border: 1px solid rgba(107,87,224,.35);
+  color: #a5b4fc;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+  transition: background .2s;
+}
+.ref-apply:hover { background: rgba(107,87,224,.32); }
+
+/* DOWNLOAD */
+.dl-section { margin-top: 14px; }
+.dl-btns { display: flex; gap: 8px; }
+.dl-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  transition: background .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.dl-pdf  { background: rgba(220,38,38,.14); color: #f87171; border: 1px solid rgba(220,38,38,.2); }
+.dl-pdf:hover  { background: rgba(220,38,38,.24); }
+.dl-word { background: rgba(37,99,235,.14); color: #93c5fd; border: 1px solid rgba(37,99,235,.2); }
+.dl-word:hover { background: rgba(37,99,235,.24); }
+
+/* FREE block label */
+.dl-block-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.dl-block-label.free   { color: var(--green); }
+.dl-block-label.locked { color: rgba(255,255,255,.3); }
+.dl-free-note { font-size: 11px; color: rgba(255,255,255,.32); margin-top: 5px; }
+
+/* FULL PROJECT locked block */
+.dl-full-block {
+  margin-top: 10px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  padding: 10px;
+}
+.dl-btn-locked {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.22);
+  opacity: .6;
+}
+.dl-locked-note {
+  font-size: 11px;
+  color: rgba(255,255,255,.25);
+  text-align: center;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* SHARE */
+.share-area { margin-top: 14px; text-align: center; }
+.share-area p { font-size: 12px; color: rgba(255,255,255,.32); margin-bottom: 9px; }
+.share-row { display: flex; gap: 8px; justify-content: center; }
+.s-btn {
+  padding: 9px 14px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.s-wa   { background: rgba(37,211,102,.12); color: #25d366; }
+.s-copy { background: rgba(255,255,255,.07); color: rgba(255,255,255,.5); }
+.s-btn:hover { transform: translateY(-2px); }
+
+.new-proj {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.7);
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: 12px;
+  border: 1.5px solid rgba(255,255,255,.1);
+  transition: border-color .2s, color .2s;
+}
+.new-proj:hover { border-color: var(--indigo-l); color: #fff; }
+
+/* FOOTER */
+footer {
+  background: var(--navy);
+  padding: 20px 5%;
+  text-align: center;
+  color: rgba(255,255,255,.3);
+  font-size: 13px;
+  margin-top: 0;
+}
+footer a { color: rgba(255,255,255,.3); text-decoration: none; transition: color .2s; }
+footer a:hover { color: var(--indigo-l); }
+footer strong { color: var(--indigo-l); font-weight: 600; }
+
+@media (max-width: 900px) {
+  .result-wrap { grid-template-columns: 1fr; }
+  .pay-card { position: static; }
+  .doc-inner { padding: 22px; }
+  .nav-right .nav-link { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-text">Project<span>Cog</span></span>
+  </a>
+  <div class="nav-right">
+    <a href="https://wa.me/2348111689782" class="nav-link" target="_blank">Need help?</a>
+    <a href="generate.html" class="nav-cta">New Project</a>
+  </div>
+</nav>
+
+<!-- SUCCESS BANNER -->
+<div class="success-bar">
+  <i class="fas fa-check-circle"></i>
+  Your free preview is ready. Preliminary pages and complete Chapter 1 generated successfully.
+</div>
+
+<!-- MAIN LAYOUT -->
+<div style="background:#3826A8;padding:28px 0 60px">
+<div class="result-wrap">
+
+  <!-- LEFT: DOCUMENT -->
+  <div>
+    <div class="doc-header">
+      <div>
+        <div class="doc-title" id="docTitle">Your Academic Project Preview</div>
+        <div class="doc-metas">
+          <span class="dm"><i class="fas fa-user"></i><span id="metaName">—</span></span>
+          <span class="dm"><i class="fas fa-university"></i><span id="metaInst">—</span></span>
+          <span class="dm"><i class="fas fa-bookmark"></i><span id="metaType">—</span></span>
+        </div>
+      </div>
+      <span class="free-tag">FREE PREVIEW</span>
+    </div>
+
+    <div class="doc-box">
+      <div class="doc-inner" id="docContent">
+        <p style="text-align:center;color:#9ca3af;padding:40px 0">Loading your project...</p>
+      </div>
+
+      <div class="lock-fade">
+        <div class="lock-icon-wrap"><i class="fas fa-lock"></i></div>
+        <div class="lock-title">Unlock Your Full Document</div>
+        <div class="lock-sub">
+          You have seen the quality. The complete document is ready. Pay once and receive everything instantly.
+        </div>
+        <div class="lock-chips">
+          <span class="chip"><i class="fas fa-lock"></i> Chapter 2: Literature Review</span>
+          <span class="chip"><i class="fas fa-lock"></i> Chapter 3: Methodology</span>
+          <span class="chip"><i class="fas fa-lock"></i> Chapter 4: Analysis</span>
+          <span class="chip"><i class="fas fa-lock"></i> Chapter 5: Conclusion</span>
+          <span class="chip"><i class="fas fa-lock"></i> References</span>
+          <span class="chip"><i class="fas fa-lock"></i> Defense Tips</span>
+        </div>
+        <a class="pay-btn" id="lockPayBtn" href="#" style="max-width:320px;margin:0 auto" onclick="goToPayment(event)">
+          <i class="fas fa-unlock"></i> Unlock Full Project Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: SIDEBAR -->
+  <div>
+    <div class="pay-card">
+      <div class="pay-card-head">
+        <h3>Unlock Full Project</h3>
+        <div class="pay-amount" id="payAmt"><sup>₦</sup>10,500</div>
+        <div class="pay-note-sm">One-time payment. No subscription.</div>
+      </div>
+
+      <div class="disc-badge" id="discBadge">Referral discount of ₦500 applied.</div>
+
+      <ul class="pay-feats" id="payFeats">
+        <li><i class="fas fa-check-circle"></i> Chapter 2: Literature Review</li>
+        <li><i class="fas fa-check-circle"></i> Chapter 3: Research Methodology</li>
+        <li><i class="fas fa-check-circle"></i> Chapter 4: Data Presentation and Analysis</li>
+        <li><i class="fas fa-check-circle"></i> Chapter 5: Summary and Recommendations</li>
+        <li><i class="fas fa-check-circle"></i> Full References (APA 7th, 20+ sources)</li>
+        <li><i class="fas fa-check-circle"></i> 15 Defense Questions with Model Answers</li>
+      </ul>
+
+      <a href="#" class="pay-btn" id="mainPayBtn" onclick="goToPayment(event)">
+        <i class="fas fa-lock-open"></i> Pay and Unlock Now
+      </a>
+      <div class="sec-note"><i class="fas fa-shield-alt"></i> Secured by Paystack. Safe and instant.</div>
+
+      <hr class="divider">
+
+      <!-- REFERRAL -->
+      <div class="ref-label"><i class="fas fa-tag"></i> Apply referral code for ₦500 off</div>
+      <div class="ref-row">
+        <input type="text" id="refInput" placeholder="Enter code">
+        <button class="ref-apply" onclick="applyRef()">Apply</button>
+      </div>
+
+      <hr class="divider">
+
+      <!-- DOWNLOAD -->
+      <div class="dl-section">
+
+        <!-- FREE PREVIEW — active, no payment needed -->
+        <div class="dl-block-label free"><i class="fas fa-check-circle"></i> Download Free Preview</div>
+        <div class="dl-btns">
+          <button class="dl-btn dl-pdf" onclick="dlPreviewPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+          <button class="dl-btn dl-word" onclick="dlPreviewWord()"><i class="fas fa-file-word"></i> Word</button>
+        </div>
+        <div class="dl-free-note">Preliminary pages and Chapter 1 — no payment needed</div>
+
+        <!-- FULL PROJECT — locked until payment -->
+        <div class="dl-full-block">
+          <div class="dl-block-label locked"><i class="fas fa-lock"></i> Full Project Download</div>
+          <div class="dl-btns">
+            <button class="dl-btn-locked" disabled><i class="fas fa-file-pdf"></i> PDF</button>
+            <button class="dl-btn-locked" disabled><i class="fas fa-file-word"></i> Word</button>
+          </div>
+          <div class="dl-locked-note"><i class="fas fa-lock"></i> Available after payment</div>
+        </div>
+
+      </div>
+
+      <hr class="divider">
+
+      <!-- SHARE -->
+      <div class="share-area">
+        <p>Share and earn referral rewards</p>
+        <div class="share-row">
+          <button class="s-btn s-wa" onclick="shareWA()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+          <button class="s-btn s-copy" onclick="copyLink()"><i class="fas fa-link"></i> Copy Link</button>
+        </div>
+      </div>
+
+      <a href="generate.html" class="new-proj"><i class="fas fa-plus"></i> Generate Another Project</a>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    &copy; 2026 ProjectCog &nbsp;&middot;&nbsp;
+    <strong>Reborn Tech Global Solutions</strong> &nbsp;&middot;&nbsp;
+    <a href="mailto:reborntechglobalsolutions@gmail.com">reborntechglobalsolutions@gmail.com</a>
+    &nbsp;&middot;&nbsp;
+    <a href="https://wa.me/2348111689782">+234 811 168 9782</a>
+  </p>
+</footer>
+
+<script>
+const PAYMENT_LINKS = {
+  final_year_project: 'https://paystack.shop/pay/jqr4kj219s',
+  siwes:              'https://paystack.shop/pay/8wvewhgb8z',
+  seminar:            'https://paystack.shop/pay/5sx10pb8lk',
+  term_paper:         'https://paystack.shop/pay/5sx10pb8lk'
+};
+const PRICES = { final_year_project:10500, siwes:7500, seminar:6500, term_paper:6500 };
+const TYPE_LABELS = {
+  final_year_project: 'Final Year Project',
+  siwes:              'SIWES Report',
+  seminar:            'Seminar Paper',
+  term_paper:         'Term Paper'
+};
+const FEATS = {
+  final_year_project: [
+    'Chapter 2: Literature Review',
+    'Chapter 3: Research Methodology',
+    'Chapter 4: Data Presentation and Analysis',
+    'Chapter 5: Summary, Conclusion and Recommendations',
+    'Full References (APA 7th, 20+ sources)',
+    'Appendices and Research Instruments',
+    '15 Defense Questions with Model Answers'
+  ],
+  siwes: [
+    'Chapter 2: Industrial Training Activities (Weekly Log)',
+    'Chapter 3: Skills and Competencies Acquired',
+    'Chapter 4: Challenges Faced and Solutions',
+    'Chapter 5: Conclusion and Recommendations',
+    'Full References',
+    '10 SIWES Defense Questions with Model Answers'
+  ],
+  seminar: [
+    'Full Body Sections with Deep Academic Arguments',
+    'Counter-Arguments and Scholarly Debates',
+    'Conclusion and Recommendations',
+    'Full References (APA 7th, 15+ sources)',
+    'Presentation Tips and Likely Questions',
+    'Guide to Scoring an A Grade'
+  ],
+  term_paper: [
+    'Full Analytical Body Sections',
+    'Critical Evaluation and Arguments',
+    'Conclusion and Recommendations',
+    'Full References (10+ sources)',
+    'Course Scoring Guide',
+    'A Grade Tips for This Paper'
+  ]
+};
+
+let currentType  = '';
+let currentPrice = 0;
+let discApplied  = false;
+let isPaid       = false;
+let generatedText = '';
+
+function renderDoc(text) {
+  let h = text
+    .replace(/^# (.+)$/gm,    '<h1>$1</h1>')
+    .replace(/^## (.+)$/gm,   '<h2>$1</h2>')
+    .replace(/^### (.+)$/gm,  '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/_{3,}/g, '<hr>')
+    .replace(/={3,}/g, '<hr>')
+    .replace(/\n\n/g,  '</p><p>');
+  if (!h.startsWith('<')) h = '<p>' + h + '</p>';
+  return h;
+}
+
+function updateFeats(type) {
+  const list  = document.getElementById('payFeats');
+  const items = FEATS[type] || FEATS.final_year_project;
+  list.innerHTML = items.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('');
+}
+
+function goToPayment(e) {
+  e.preventDefault();
+  const link = PAYMENT_LINKS[currentType] || PAYMENT_LINKS.final_year_project;
+  window.open(link, '_blank');
+}
+
+function applyRef() {
+  const code = document.getElementById('refInput').value.trim();
+  if (!code)        { alert('Please enter a referral code.'); return; }
+  if (discApplied)  { alert('A referral code has already been applied.'); return; }
+  discApplied   = true;
+  currentPrice -= 500;
+  document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
+  document.getElementById('discBadge').classList.add('show');
+  alert('Referral code applied. A ₦500 discount has been added.');
+}
+
+function dlPreviewPDF() {
+  const content = generatedText || 'ProjectCog Free Preview';
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'ProjectCog_FreePreview_' + currentType + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function dlPreviewWord() {
+  alert('Your free preview Word document is being prepared.\n\nContact us at reborntechglobalsolutions@gmail.com with your name and project topic to receive it.');
+}
+
+function dlPDF() {
+  if (!isPaid) {
+    alert('Please complete payment first to download your full project. Click "Pay and Unlock Now" to proceed.');
+    return;
+  }
+  const blob = new Blob([generatedText], { type: 'text/plain' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'ProjectCog_' + currentType + '_Preview.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function dlWord() {
+  if (!isPaid) {
+    alert('Please complete payment first to download your full project. Click "Pay and Unlock Now" to proceed.');
+    return;
+  }
+  alert('Your complete Word document will be sent to your email address after payment confirmation. Contact us at reborntechglobalsolutions@gmail.com with your payment reference.');
+}
+
+function shareWA() {
+  const txt = encodeURIComponent(
+    'I just used ProjectCog to generate my academic project for free!\n\nTry it at: https://projectcog.com.ng\n\nNigerian students, this is a game changer. Use my referral code when you sign up.'
+  );
+  window.open('https://wa.me/?text=' + txt, '_blank');
+}
+
+function copyLink() {
+  navigator.clipboard.writeText('https://projectcog.com.ng').then(() => alert('Link copied. Share it with your classmates.'));
+}
+
+function init() {
+  const rs = localStorage.getItem('projectcog_result');
+  if (!rs) { window.location.href = 'generate.html'; return; }
+  const data   = JSON.parse(rs);
+  currentType  = data.projectType || 'final_year_project';
+  currentPrice = PRICES[currentType] || 10500;
+  generatedText = data.generatedProject || '';
+
+  document.getElementById('docTitle').textContent  = (TYPE_LABELS[currentType] || 'Academic Project') + ' — Free Preview';
+  document.getElementById('metaName').textContent  = data.studentName || '—';
+  document.getElementById('metaType').textContent  = TYPE_LABELS[currentType] || '—';
+  document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
+
+  const ps = localStorage.getItem('projectcog_payload');
+  if (ps) {
+    const p = JSON.parse(ps);
+    document.getElementById('metaInst').textContent = p.institutionName || '—';
+    if (p.referralCode) {
+      document.getElementById('refInput').value = p.referralCode;
+      applyRef();
+    }
+  }
+
+  updateFeats(currentType);
+  if (generatedText) {
+    document.getElementById('docContent').innerHTML = renderDoc(generatedText);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
