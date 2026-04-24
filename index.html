@@ -21,7 +21,7 @@
   --gray-2:    #94a3b8;
   --border:    #e2e8f0;
   --green:     #10b981;
-  --bg-page:   #3826A8;
+  --bg-page:   #ffffff;
   --radius-lg: 28px;
   --radius:    16px;
   --shadow:    0 8px 40px rgba(15,22,40,0.13);
@@ -29,7 +29,7 @@
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; }
-body { font-family:'DM Sans', sans-serif; background:var(--bg-page); color:var(--navy); overflow-x:hidden; }
+body { font-family:'DM Sans', sans-serif; background:#ffffff; color:var(--navy); overflow-x:hidden; }
 img { max-width:100%; display:block; }
 a { text-decoration:none; }
 
@@ -86,14 +86,14 @@ nav {
 
 /* ── PAGE WRAPPER ── */
 .page-bg {
-  background:var(--bg-page);
-  padding:56px 5% 72px;
+  background:#ffffff;
+  padding:0;
 }
 
 /* ── HERO CARD ── */
 .hero-card {
   background:var(--white);
-  border-radius:var(--radius-lg);
+  border-radius:0;
   padding:64px 7% 56px;
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -101,20 +101,9 @@ nav {
   align-items:center;
   position:relative;
   overflow:hidden;
-  box-shadow:var(--shadow-lg);
+  border-bottom:1.5px solid var(--border);
 }
-.hero-card::before {
-  content:'';
-  position:absolute;
-  top:-60px;
-  right:-60px;
-  width:220px;
-  height:220px;
-  background:var(--yellow);
-  border-radius:50%;
-  opacity:.9;
-  pointer-events:none;
-}
+.hero-card::before { display:none; }
 .hero-eyebrow {
   display:inline-flex;
   align-items:center;
@@ -294,17 +283,16 @@ nav {
 /* ── WHITE CARD SECTIONS ── */
 .card-section {
   background:var(--white);
-  border-radius:var(--radius-lg);
+  border-radius:0;
   padding:64px 7%;
-  margin-bottom:20px;
-  box-shadow:var(--shadow);
+  margin-bottom:0;
+  border-bottom:1.5px solid var(--border);
 }
 .card-section-dark {
   background:var(--navy);
-  border-radius:var(--radius-lg);
+  border-radius:0;
   padding:64px 7%;
-  margin-bottom:20px;
-  box-shadow:var(--shadow);
+  margin-bottom:0;
 }
 
 /* ── HOW IT WORKS ── */
@@ -425,7 +413,7 @@ nav {
 }
 .price-card {
   background:var(--white);
-  border-radius:20px;
+  border-radius:12px;
   padding:34px 26px;
   border:2px solid var(--border);
   transition:all .3s;
