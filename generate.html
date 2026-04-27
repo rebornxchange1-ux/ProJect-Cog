@@ -441,21 +441,21 @@ footer a:hover { color:var(--indigo-l); }
           </label>
           <label class="type-card" id="tc_siwes" onclick="pickType('siwes','tc_siwes')">
             <input type="radio" name="ptype" value="siwes">
-            <div class="tc-top"><span class="tc-icon">🏭</span><span class="tc-price">₦7,500</span></div>
+            <div class="tc-top"><span class="tc-icon">🏭</span><span class="tc-price">₦4,500</span></div>
             <div class="tc-name">SIWES Report</div>
             <div class="tc-desc">Industrial training documentation</div>
             <span class="tc-check"><i class="fas fa-check"></i></span>
           </label>
           <label class="type-card" id="tc_seminar" onclick="pickType('seminar','tc_seminar')">
             <input type="radio" name="ptype" value="seminar">
-            <div class="tc-top"><span class="tc-icon">🎤</span><span class="tc-price">₦6,500</span></div>
+            <div class="tc-top"><span class="tc-icon">🎤</span><span class="tc-price">₦4,500</span></div>
             <div class="tc-name">Seminar Paper</div>
             <div class="tc-desc">Academic seminar presentation</div>
             <span class="tc-check"><i class="fas fa-check"></i></span>
           </label>
           <label class="type-card" id="tc_term" onclick="pickType('term_paper','tc_term')">
             <input type="radio" name="ptype" value="term_paper">
-            <div class="tc-top"><span class="tc-icon">📄</span><span class="tc-price">₦6,500</span></div>
+            <div class="tc-top"><span class="tc-icon">📄</span><span class="tc-price">₦4,500</span></div>
             <div class="tc-name">Term Paper</div>
             <div class="tc-desc">Course analytical essay</div>
             <span class="tc-check"><i class="fas fa-check"></i></span>
@@ -548,7 +548,7 @@ footer a:hover { color:var(--indigo-l); }
 </footer>
 
 <script>
-const WEBHOOK_URL='https://chi-tech.app.n8n.cloud/webhook-test/projectcog';
+const WEBHOOK_URL='https://chi-tech.app.n8n.cloud/webhook/projectcog';
 let selType='';
 
 function pickType(t,id){
@@ -578,12 +578,16 @@ function handleInstType(){
 function g(id){return document.getElementById(id)?.value?.trim()||'';}
 
 function buildPayload(){
+  const now = new Date();
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const currentDate = months[now.getMonth()] + ' ' + now.getFullYear();
   const payload={
     studentName:g('studentName'),matricNumber:g('matricNumber'),
     institutionType:g('institutionType'),institutionName:g('institutionName'),
     department:g('department'),programme:g('programme'),
     projectType:selType,projectTopic:g('projectTopic'),
     supervisorName:g('supervisorName'),academicYear:g('academicYear'),
+    currentDate:currentDate,
     finalYearProject:null,siwes:null,seminar:null,
     referralCode:g('referralCode')||null,paymentRef:null
   };
