@@ -523,8 +523,12 @@ footer a:hover { color:var(--indigo-l); }
         <div class="fc-sub">Have a referral code? Enter it here to get ₦500 off your payment.</div>
         <div class="ref-box">
           <label>Referral Code</label>
-          <input type="text" id="referralCode" placeholder="Enter referral code for ₦500 discount" style="margin-top:8px">
-          <small>Don't have one? <a href="mailto:reborntechglobalsolutions@gmail.com?subject=ProjectCog Referral Code Request" style="color:var(--indigo);font-weight:600">Email us to get your code</a> and start earning rewards.</small>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <input type="text" id="referralCode" placeholder="Enter referral code for ₦500 discount" style="flex:1">
+            <button type="button" id="refApplyBtn" onclick="applyRef()" style="padding:10px 18px;background:var(--indigo);color:#fff;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .2s">Apply</button>
+          </div>
+          <div id="refFeedback" style="display:none;margin-top:10px;padding:10px 14px;border-radius:9px;font-size:13px;font-weight:600;display:none;align-items:center;gap:8px"></div>
+          <small style="margin-top:8px;display:block">Don't have one? <a href="mailto:reborntechglobalsolutions@gmail.com?subject=ProjectCog Referral Code Request" style="color:var(--indigo);font-weight:600">Email us to get your code</a> and start earning rewards.</small>
         </div>
       </div>
 
@@ -575,6 +579,68 @@ function handleInstType(){
   else p.placeholder='e.g. B.Sc Computer Science';
 }
 
+const REFERRAL_URL = 'https://chi-tech.app.n8n.cloud/webhook/projectcog-referral';
+let discountApplied = false;
+let discountAmount  = 0;
+
+async function applyRef(){
+  const code = g('referralCode');
+  const btn  = document.getElementById('refApplyBtn');
+  const fb   = document.getElementById('refFeedback');
+
+  if(!code){ showRefFeedback('Please enter a referral code first.','error'); return; }
+  if(discountApplied){ showRefFeedback('A referral code has already been applied.','error'); return; }
+
+  // Loading state
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+  fb.style.display = 'none';
+
+  try {
+    const res  = await fetch(REFERRAL_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ referralCode: code })
+    });
+    const data = await res.json();
+
+    if(data.valid){
+      discountApplied = true;
+      discountAmount  = data.discount || 500;
+      btn.textContent = 'Applied';
+      btn.style.background = 'var(--green)';
+      btn.disabled = true;
+      document.getElementById('referralCode').disabled = true;
+      showRefFeedback('<i class="fas fa-check-circle"></i> ' + data.message + (data.refereeName ? ' Referred by: ' + data.refereeName : ''), 'success');
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Apply';
+      showRefFeedback('<i class="fas fa-times-circle"></i> ' + data.message, 'error');
+    }
+  } catch(err){
+    btn.disabled = false;
+    btn.textContent = 'Apply';
+    showRefFeedback('<i class="fas fa-exclamation-circle"></i> Could not validate code. Check your connection and try again.', 'error');
+  }
+}
+
+function showRefFeedback(msg, type){
+  const fb = document.getElementById('refFeedback');
+  fb.innerHTML = msg;
+  fb.style.display = 'flex';
+  if(type === 'success'){
+    fb.style.background = 'rgba(16,185,129,.08)';
+    fb.style.border = '1px solid rgba(16,185,129,.25)';
+    fb.style.color = '#059669';
+  } else {
+    fb.style.background = '#fef2f2';
+    fb.style.border = '1px solid #fecaca';
+    fb.style.color = '#dc2626';
+  }
+}
+
+
+
 function g(id){return document.getElementById(id)?.value?.trim()||'';}
 
 function buildPayload(){
@@ -589,7 +655,10 @@ function buildPayload(){
     supervisorName:g('supervisorName'),academicYear:g('academicYear'),
     currentDate:currentDate,
     finalYearProject:null,siwes:null,seminar:null,
-    referralCode:g('referralCode')||null,paymentRef:null
+    referralCode:discountApplied ? g('referralCode') : null,
+    discountApplied:discountApplied,
+    discountAmount:discountAmount,
+    paymentRef:null
   };
   if(selType==='final_year_project') payload.finalYearProject={faculty:g('faculty'),category:g('category'),caseStudy:g('caseStudy')||null};
   if(selType==='siwes') payload.siwes={organizationName:g('organizationName'),duration:g('duration')};
