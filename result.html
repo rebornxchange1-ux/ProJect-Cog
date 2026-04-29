@@ -332,7 +332,7 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
 </div>
 
 <!-- MAIN -->
-<div style="background:#3826A8;padding:28px 0 60px">
+<div style="background:#ffffff;padding:28px 0 60px">
 <div class="result-wrap">
 
   <!-- LEFT: DOCUMENT -->
@@ -395,7 +395,7 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
     <div class="pay-card">
       <div class="pay-card-head">
         <h3 id="cardTitle">Unlock Full Project</h3>
-        <div class="pay-amount" id="payAmt"><sup>₦</sup>10,500</div>
+        <div class="pay-amount" id="payAmt"><sup>₦</sup>—</div>
         <div class="pay-note-sm">One-time payment. No subscription.</div>
       </div>
 
@@ -562,10 +562,23 @@ function renderDoc(raw) {
     if (inParagraph) { html += '</p>'; inParagraph = false; }
   }
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+  // Strip all stray markdown from a line
+  function cleanLine(line) {
+    return line
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') // bold first
+      .replace(/\*(.+?)\*/g, '$1')                        // italic — strip stars, keep text
+      .replace(/\*/g, '')                                  // any remaining asterisks
+      .replace(/={3,}/g, '')                               // === lines
+      .replace(/#{1,6}\s*/g, '')                           // stray hashes
+      .replace(/^[-–]{3,}$/, '')                           // horizontal rules as text
+      .trim();
+  }
 
-    // Empty line — close paragraph
+  for (let i = 0; i < lines.length; i++) {
+    const raw_line = lines[i];
+    const line     = raw_line.trim();
+
+    // Empty line
     if (!line) {
       closeParagraph();
       html += '<div style="margin-bottom:10px"></div>';
@@ -579,32 +592,38 @@ function renderDoc(raw) {
       continue;
     }
 
-    // H1 — cover page title / chapter title
+    // H1
     if (line.startsWith('# ')) {
       closeParagraph();
-      html += `<h1 style="font-family:'Times New Roman',serif;font-size:15px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.04em;margin:20px 0 10px;line-height:1.5">${line.slice(2)}</h1>`;
+      html += `<h1 style="font-family:'Times New Roman',serif;font-size:15px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.04em;margin:20px 0 10px;line-height:1.5">${cleanLine(line.slice(2))}</h1>`;
       continue;
     }
 
-    // H2 — section headings
+    // H2
     if (line.startsWith('## ')) {
       closeParagraph();
-      html += `<h2 style="font-family:'Times New Roman',serif;font-size:14.5px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.03em;margin:22px 0 10px">${line.slice(3)}</h2>`;
+      html += `<h2 style="font-family:'Times New Roman',serif;font-size:14.5px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.03em;margin:22px 0 10px">${cleanLine(line.slice(3))}</h2>`;
       continue;
     }
 
-    // H3 — sub-section headings
+    // H3
     if (line.startsWith('### ')) {
       closeParagraph();
-      html += `<h3 style="font-family:'Times New Roman',serif;font-size:14px;font-weight:700;text-align:left;text-transform:uppercase;margin:18px 0 8px">${line.slice(4)}</h3>`;
+      html += `<h3 style="font-family:'Times New Roman',serif;font-size:14px;font-weight:700;text-align:left;text-transform:uppercase;margin:18px 0 8px">${cleanLine(line.slice(4))}</h3>`;
       continue;
     }
 
-    // Centered lines (BY, student name, institution etc on cover page)
-    // Detect lines that are ALL CAPS and short — treat as centered
+    // Lines that are all asterisks or equals — skip entirely
+    if (/^[*=\-_]{3,}$/.test(line)) {
+      closeParagraph();
+      html += '<div style="margin-bottom:8px"></div>';
+      continue;
+    }
+
+    // ALL CAPS short lines — centered label
     if (line === line.toUpperCase() && line.length < 80 && !/[.,:;?!]/.test(line) && line.length > 2) {
       closeParagraph();
-      html += `<p style="font-family:'Times New Roman',serif;font-size:14px;text-align:center;font-weight:600;margin:6px 0;text-transform:uppercase">${line}</p>`;
+      html += `<p style="font-family:'Times New Roman',serif;font-size:14px;text-align:center;font-weight:600;margin:6px 0;text-transform:uppercase">${cleanLine(line)}</p>`;
       continue;
     }
 
@@ -615,17 +634,17 @@ function renderDoc(raw) {
       continue;
     }
 
-    // Bold lines **text**
-    const boldLine = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // Normal paragraph
+    const cleaned = cleanLine(line);
+    if (!cleaned) continue;
 
-    // Normal paragraph line
     if (!inParagraph) {
       html += `<p style="font-family:'Times New Roman',serif;font-size:14.5px;line-height:1.9;text-align:justify;margin-bottom:14px;color:#111">`;
       inParagraph = true;
     } else {
       html += ' ';
     }
-    html += boldLine;
+    html += cleaned;
   }
 
   closeParagraph();
@@ -783,7 +802,8 @@ function dlPreviewPDF() {
 }
 
 function dlPreviewWord() {
-  alert('Your free preview Word document is being prepared.\n\nContact us on WhatsApp: +234 811 168 9782');
+  if (!previewText) { alert('Preview not loaded yet.'); return; }
+  generateWordDoc(previewText, 'ProjectCog_FreePreview_' + currentType + '.doc');
 }
 
 function dlFullPDF() {
@@ -793,7 +813,83 @@ function dlFullPDF() {
 
 function dlFullWord() {
   if (!fullText) { alert('Full project not loaded yet. Please wait.'); return; }
-  triggerDownload(fullText, 'ProjectCog_FullProject_' + currentType + '.txt');
+  generateWordDoc(fullText, 'ProjectCog_FullProject_' + currentType + '.doc');
+}
+
+function dlPreviewWordDoc() {
+  if (!previewText) { alert('Preview not loaded yet.'); return; }
+  generateWordDoc(previewText, 'ProjectCog_FreePreview_' + currentType + '.doc');
+}
+
+function generateWordDoc(rawText, filename) {
+  // Strip all markdown symbols for Word output
+  const clean = rawText
+    .replace(/\\n/g, '\n')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/\*/g, '')
+    .replace(/={3,}/g, '')
+    .replace(/#{1,6}\s*/g, '')
+    .replace(/^[-–]{3,}$/gm, '')
+    .trim();
+
+  // Build Word HTML (Word reads .doc as HTML)
+  const wordHtml = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset='utf-8'>
+<style>
+  @page { margin: 1in; }
+  body {
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+    line-height: 2.0;
+    color: #000;
+  }
+  p {
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+    line-height: 2.0;
+    text-align: justify;
+    margin: 0 0 12pt 0;
+  }
+  h1, h2 {
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 18pt 0 10pt 0;
+  }
+  h3 {
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+    font-weight: bold;
+    text-align: left;
+    text-transform: uppercase;
+    margin: 14pt 0 8pt 0;
+  }
+</style>
+</head>
+<body>
+${clean.split('\n').map(line => {
+  const t = line.trim();
+  if (!t) return '<p>&nbsp;</p>';
+  if (t === t.toUpperCase() && t.length < 80 && t.length > 2) return `<h2>${t}</h2>`;
+  return `<p>${t}</p>`;
+}).join('\n')}
+</body>
+</html>`;
+
+  const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function triggerDownload(content, filename) {
