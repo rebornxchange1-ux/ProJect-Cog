@@ -939,25 +939,28 @@ function init() {
   const rs = localStorage.getItem('projectcog_result');
   if (!rs) { window.location.href = 'generate.html'; return; }
 
-  const data    = JSON.parse(rs);
-  currentType   = data.projectType  || 'final_year_project';
-  currentPrice  = PRICES[currentType] || 10500;
-  previewText   = data.generatedProject || '';
-  currentRef    = data.reference || '';
+  const data = JSON.parse(rs);
+
+  // Get projectType from result first, then fall back to payload
+  // This fixes the pricing always showing 10,500
+  const ps = localStorage.getItem('projectcog_payload');
+  const payload = ps ? JSON.parse(ps) : {};
+  currentType  = data.projectType || payload.projectType || 'final_year_project';
+  currentPrice = PRICES[currentType] || 10500;
+  previewText  = data.generatedProject || '';
+  currentRef   = data.reference || '';
 
   document.getElementById('docTitle').textContent = (TYPE_LABELS[currentType] || 'Academic Project') + ' — Free Preview';
-  document.getElementById('metaName').textContent = data.studentName || '—';
+  document.getElementById('metaName').textContent = data.studentName || payload.studentName || '—';
   document.getElementById('metaType').textContent = TYPE_LABELS[currentType] || '—';
   document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
 
-  const ps = localStorage.getItem('projectcog_payload');
-  if (ps) {
-    const p = JSON.parse(ps);
-    document.getElementById('metaInst').textContent = p.institutionName || '—';
-    if (p.referralCode) {
-      document.getElementById('refInput').value = p.referralCode;
-      applyRef();
-    }
+  if (payload.institutionName) {
+    document.getElementById('metaInst').textContent = payload.institutionName;
+  }
+  if (payload.referralCode) {
+    document.getElementById('refInput').value = payload.referralCode;
+    applyRef();
   }
 
   updateFeats(currentType);
