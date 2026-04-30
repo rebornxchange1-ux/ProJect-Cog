@@ -370,21 +370,8 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
 
       <!-- Lock overlay — hidden after payment -->
       <div class="lock-fade" id="lockFade">
-        <div class="lock-icon-wrap"><i class="fas fa-lock"></i></div>
-        <div class="lock-title">Unlock Your Full Document</div>
-        <div class="lock-sub">
-          You have seen the quality. The complete document is ready. Pay once and receive everything instantly.
-        </div>
-        <div class="lock-chips">
-          <span class="chip"><i class="fas fa-lock"></i> Chapter 2: Literature Review</span>
-          <span class="chip"><i class="fas fa-lock"></i> Chapter 3: Methodology</span>
-          <span class="chip"><i class="fas fa-lock"></i> Chapter 4: Analysis</span>
-          <span class="chip"><i class="fas fa-lock"></i> Chapter 5: Conclusion</span>
-          <span class="chip"><i class="fas fa-lock"></i> References</span>
-          <span class="chip"><i class="fas fa-lock"></i> Defense Tips</span>
-        </div>
-        <a class="pay-btn" id="lockPayBtn" href="#" style="max-width:320px;margin:0 auto" onclick="goToPayment(event)">
-          <i class="fas fa-unlock"></i> Unlock Full Project Now
+        <a class="pay-btn" id="lockPayBtn" href="#" style="max-width:340px;margin:0 auto;font-size:16px;padding:16px 32px" onclick="goToPayment(event)">
+          <i class="fas fa-unlock"></i> Pay to Unlock Full Project
         </a>
       </div>
     </div>
@@ -941,23 +928,22 @@ function init() {
 
   const data = JSON.parse(rs);
 
-  // Get projectType from result first, then fall back to payload
-  // This fixes the pricing always showing 10,500
-  const ps = localStorage.getItem('projectcog_payload');
+  // Always read projectType from payload first — this is what the student selected
+  // Fall back to result data only if payload missing
+  const ps      = localStorage.getItem('projectcog_payload');
   const payload = ps ? JSON.parse(ps) : {};
-  currentType  = data.projectType || payload.projectType || 'final_year_project';
+
+  currentType  = payload.projectType || data.projectType || 'final_year_project';
   currentPrice = PRICES[currentType] || 10500;
   previewText  = data.generatedProject || '';
   currentRef   = data.reference || '';
 
   document.getElementById('docTitle').textContent = (TYPE_LABELS[currentType] || 'Academic Project') + ' — Free Preview';
-  document.getElementById('metaName').textContent = data.studentName || payload.studentName || '—';
+  document.getElementById('metaName').textContent = payload.studentName || data.studentName || '—';
   document.getElementById('metaType').textContent = TYPE_LABELS[currentType] || '—';
+  document.getElementById('metaInst').textContent = payload.institutionName || '—';
   document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
 
-  if (payload.institutionName) {
-    document.getElementById('metaInst').textContent = payload.institutionName;
-  }
   if (payload.referralCode) {
     document.getElementById('refInput').value = payload.referralCode;
     applyRef();
