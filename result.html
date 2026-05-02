@@ -468,7 +468,7 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
 <script>
 // ── CONFIGURATION ──
 // IMPORTANT: Replace this with your actual n8n Stage 2 production webhook URL
-const STAGE2_WEBHOOK = 'https://chi-tech.app.n8n.cloud/webhook/ProjectCog-Payment';
+const STAGE2_WEBHOOK = 'https://ProjectCog-backend.onrender.com:5678/webhook/ProjectCog-Payment';
 
 const PAYMENT_LINKS = {
   final_year_project: 'https://paystack.shop/pay/jqr4kj219s',
@@ -687,7 +687,7 @@ function startPolling(reference) {
       });
       if (!res.ok) return;
       const data = await res.json();
-      if (data && data.status === 'success' && data.generatedProject) {
+      if (data && data.status === 'success' && data.fullProject) {
         clearInterval(pollInterval);
         deliverFullProject(data);
       }
@@ -716,7 +716,7 @@ async function fetchFullProject(reference) {
     });
     const data = await res.json();
     document.getElementById('loadingOverlay').classList.remove('show');
-    if (data && data.status === 'success' && data.generatedProject) {
+    if (data && data.status === 'success' && data.fullProject) {
       deliverFullProject(data);
     }
   } catch(e) {
@@ -728,7 +728,7 @@ async function fetchFullProject(reference) {
 // ── UNLOCK UI AFTER FULL PROJECT DELIVERED ──
 function deliverFullProject(data) {
   isPaid    = true;
-  fullText  = data.generatedProject || '';
+  fullText  = data.fullProject || data.generatedProject || '';
 
   // Save full project to localStorage
   localStorage.setItem('projectcog_full_project', fullText);
@@ -958,7 +958,7 @@ function init() {
   const alreadyPaid = localStorage.getItem('projectcog_paid');
   const savedFull   = localStorage.getItem('projectcog_full_project');
   if (alreadyPaid === 'true' && savedFull) {
-    deliverFullProject({ status: 'success', generatedProject: savedFull });
+    deliverFullProject({ status: 'success', fullProject: savedFull });
     return;
   }
 
