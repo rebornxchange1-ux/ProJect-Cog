@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mock Defense — ProjectCog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --indigo:   #4B35C8;
+  --indigo-d: #3826A8;
+  --indigo-l: #6B57E0;
+  --navy:     #0F1628;
+  --gold:     #C9A84C;
+  --gold-l:   #F5C842;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --white:    #ffffff;
+  --off:      #F6F7FD;
+  --gray:     #64748b;
+  --gray-2:   #94a3b8;
+  --border:   #e2e8f0;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'DM Sans', sans-serif;
+  background:#0a0e1a;
+  color:var(--white);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* TOP BAR */
+.top-bar {
+  background:rgba(15,22,40,0.95);
+  border-bottom:1px solid rgba(201,168,76,0.2);
+  padding:0 5%;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+  backdrop-filter:blur(10px);
+}
+.top-bar-logo {
+  font-family:'Instrument Serif', serif;
+  font-size:20px;
+  color:var(--white);
+  text-decoration:none;
+}
+.top-bar-logo span { color:var(--gold-l); font-style:italic; }
+.back-btn {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--gray-2);
+  font-size:13.5px;
+  font-weight:600;
+  text-decoration:none;
+  padding:8px 16px;
+  border-radius:9px;
+  border:1.5px solid rgba(255,255,255,0.1);
+  transition:all .2s;
+}
+.back-btn:hover { color:var(--gold-l); border-color:rgba(201,168,76,0.4); }
+
+/* DEFENSE BANNER */
+.defense-banner {
+  background:linear-gradient(135deg, #0f1628 0%, #1a1040 50%, #0f1628 100%);
+  border-bottom:1px solid rgba(201,168,76,0.15);
+  padding:28px 5%;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.defense-banner::before {
+  content:'';
+  position:absolute;
+  top:-100px; left:50%;
+  transform:translateX(-50%);
+  width:600px; height:300px;
+  background:radial-gradient(ellipse, rgba(201,168,76,0.07), transparent 70%);
+  pointer-events:none;
+}
+.seal {
+  width:56px; height:56px;
+  background:rgba(201,168,76,0.1);
+  border:1.5px solid rgba(201,168,76,0.3);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  margin:0 auto 14px;
+}
+.banner-title {
+  font-family:'Instrument Serif', serif;
+  font-size:clamp(20px, 2.5vw, 30px);
+  font-weight:400;
+  color:var(--white);
+  margin-bottom:6px;
+}
+.banner-title span { color:var(--gold-l); font-style:italic; }
+.banner-sub {
+  font-size:13.5px;
+  color:rgba(255,255,255,0.5);
+  max-width:520px;
+  margin:0 auto;
+  line-height:1.6;
+}
+.topic-pill {
+  display:inline-block;
+  margin-top:14px;
+  padding:7px 18px;
+  background:rgba(201,168,76,0.08);
+  border:1px solid rgba(201,168,76,0.25);
+  border-radius:100px;
+  font-size:13px;
+  color:var(--gold-l);
+  font-weight:600;
+  max-width:90%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* PROGRESS */
+.progress-area {
+  background:rgba(15,22,40,0.8);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  padding:16px 5%;
+}
+.progress-meta {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+  font-size:12.5px;
+}
+.progress-label { color:var(--gray-2); font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+.progress-count { color:var(--gold-l); font-weight:700; font-size:13px; }
+.prog-track {
+  background:rgba(255,255,255,0.07);
+  border-radius:100px;
+  height:6px;
+  overflow:hidden;
+}
+.prog-fill {
+  height:100%;
+  background:linear-gradient(90deg, var(--gold), var(--gold-l));
+  border-radius:100px;
+  transition:width 0.8s ease;
+  width:0%;
+}
+.question-dots {
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+.q-dot {
+  width:22px; height:22px;
+  border-radius:50%;
+  font-size:10px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all .3s;
+  background:rgba(255,255,255,0.06);
+  color:var(--gray-2);
+  border:1px solid rgba(255,255,255,0.08);
+}
+.q-dot.answered { background:rgba(16,185,129,0.2); color:var(--green); border-color:rgba(16,185,129,0.3); }
+.q-dot.active { background:rgba(201,168,76,0.2); color:var(--gold-l); border-color:rgba(201,168,76,0.4); }
+
+/* MAIN LAYOUT */
+.main {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  max-width:780px;
+  width:100%;
+  margin:0 auto;
+  padding:28px 5% 40px;
+}
+
+/* WELCOME SCREEN */
+#welcomeScreen {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px 0 40px;
+}
+.welcome-icon {
+  width:72px; height:72px;
+  background:rgba(201,168,76,0.1);
+  border:2px solid rgba(201,168,76,0.25);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  margin:0 auto 22px;
+}
+.welcome-title {
+  font-family:'Instrument Serif', serif;
+  font-size:clamp(22px, 3vw, 32px);
+  color:var(--white);
+  margin-bottom:12px;
+}
+.welcome-title span { color:var(--gold-l); font-style:italic; }
+.welcome-body {
+  font-size:14.5px;
+  color:rgba(255,255,255,0.55);
+  line-height:1.75;
+  max-width:520px;
+  margin:0 auto 28px;
+}
+.rules-box {
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(201,168,76,0.15);
+  border-radius:14px;
+  padding:20px 24px;
+  text-align:left;
+  max-width:500px;
+  width:100%;
+  margin:0 auto 28px;
+}
+.rules-box h4 {
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--gold-l);
+  margin-bottom:14px;
+}
+.rule-item {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:10px;
+  font-size:13.5px;
+  color:rgba(255,255,255,0.6);
+  line-height:1.5;
+}
+.rule-item:last-child { margin-bottom:0; }
+.rule-item i { color:var(--gold); font-size:12px; margin-top:3px; flex-shrink:0; }
+.start-btn {
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 36px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-l));
+  color:#0a0e1a;
+  font-family:'DM Sans', sans-serif;
+  font-size:15px;
+  font-weight:700;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  transition:all .2s;
+  box-shadow:0 8px 28px rgba(201,168,76,0.3);
+}
+.start-btn:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(201,168,76,0.4); }
+
+/* CHAT AREA */
+#chatScreen { display:none; flex-direction:column; gap:0; }
+#chatScreen.active { display:flex; }
+
+.chat-log {
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin-bottom:24px;
+}
+
+/* PANEL (examiner) message */
+.msg-panel {
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+.panel-avatar {
+  width:38px; height:38px;
+  background:rgba(201,168,76,0.12);
+  border:1.5px solid rgba(201,168,76,0.3);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  flex-shrink:0;
+  margin-top:2px;
+}
+.panel-bubble {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:4px 14px 14px 14px;
+  padding:14px 18px;
+  max-width:86%;
+}
+.panel-label {
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:7px;
+}
+.panel-text {
+  font-size:14.5px;
+  color:rgba(255,255,255,0.85);
+  line-height:1.7;
+}
+
+/* STUDENT message */
+.msg-student {
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  flex-direction:row-reverse;
+}
+.student-avatar {
+  width:38px; height:38px;
+  background:rgba(75,53,200,0.2);
+  border:1.5px solid rgba(75,53,200,0.4);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  flex-shrink:0;
+  margin-top:2px;
+}
+.student-bubble {
+  background:rgba(75,53,200,0.15);
+  border:1px solid rgba(75,53,200,0.25);
+  border-radius:14px 4px 14px 14px;
+  padding:14px 18px;
+  max-width:86%;
+}
+.student-label {
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--indigo-l);
+  margin-bottom:7px;
+  text-align:right;
+}
+.student-text {
+  font-size:14.5px;
+  color:rgba(255,255,255,0.8);
+  line-height:1.7;
+}
+
+/* FEEDBACK CARD */
+.feedback-card {
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  padding:14px 18px;
+  margin-top:4px;
+  margin-left:50px;
+}
+.feedback-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+.feedback-label {
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--gray-2);
+}
+.score-badge {
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:3px 10px;
+  border-radius:100px;
+  font-size:12px;
+  font-weight:700;
+}
+.score-badge.high { background:rgba(16,185,129,0.15); color:var(--green); border:1px solid rgba(16,185,129,0.25); }
+.score-badge.mid  { background:rgba(245,200,66,0.12); color:var(--gold-l); border:1px solid rgba(245,200,66,0.25); }
+.score-badge.low  { background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.2); }
+.feedback-text {
+  font-size:13.5px;
+  color:rgba(255,255,255,0.6);
+  line-height:1.65;
+}
+
+/* FINAL RESULT */
+.final-card {
+  background:linear-gradient(135deg, rgba(201,168,76,0.08), rgba(75,53,200,0.08));
+  border:1.5px solid rgba(201,168,76,0.25);
+  border-radius:16px;
+  padding:28px 24px;
+  text-align:center;
+  margin-top:8px;
+}
+.final-icon { font-size:40px; margin-bottom:14px; }
+.final-title {
+  font-family:'Instrument Serif', serif;
+  font-size:22px;
+  color:var(--gold-l);
+  margin-bottom:10px;
+}
+.final-score-ring {
+  width:90px; height:90px;
+  border-radius:50%;
+  border:3px solid var(--gold);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 16px;
+  background:rgba(201,168,76,0.07);
+}
+.final-score-num {
+  font-family:'Instrument Serif', serif;
+  font-size:28px;
+  color:var(--gold-l);
+  line-height:1;
+}
+.final-score-denom { font-size:11px; color:var(--gray-2); }
+.final-body {
+  font-size:14px;
+  color:rgba(255,255,255,0.65);
+  line-height:1.7;
+  max-width:480px;
+  margin:0 auto 20px;
+}
+.retry-btn {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 26px;
+  background:rgba(201,168,76,0.12);
+  color:var(--gold-l);
+  border:1.5px solid rgba(201,168,76,0.3);
+  border-radius:10px;
+  font-family:'DM Sans', sans-serif;
+  font-size:13.5px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  text-decoration:none;
+}
+.retry-btn:hover { background:rgba(201,168,76,0.2); }
+
+/* INPUT AREA */
+.input-area {
+  background:rgba(15,22,40,0.9);
+  border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  padding:16px;
+  position:sticky;
+  bottom:24px;
+  backdrop-filter:blur(12px);
+}
+.input-area textarea {
+  width:100%;
+  background:transparent;
+  border:none;
+  outline:none;
+  font-family:'DM Sans', sans-serif;
+  font-size:14.5px;
+  color:var(--white);
+  resize:none;
+  line-height:1.6;
+  min-height:60px;
+  max-height:140px;
+  overflow-y:auto;
+}
+.input-area textarea::placeholder { color:rgba(255,255,255,0.25); }
+.input-footer {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.input-hint { font-size:12px; color:rgba(255,255,255,0.25); }
+.send-btn {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 22px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-l));
+  color:#0a0e1a;
+  font-family:'DM Sans', sans-serif;
+  font-size:13.5px;
+  font-weight:700;
+  border:none;
+  border-radius:9px;
+  cursor:pointer;
+  transition:all .2s;
+}
+.send-btn:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 6px 20px rgba(201,168,76,0.35); }
+.send-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+/* TYPING INDICATOR */
+.typing-indicator {
+  display:none;
+  align-items:center;
+  gap:12px;
+  padding:4px 0;
+}
+.typing-indicator.show { display:flex; }
+.typing-dots {
+  display:flex;
+  gap:4px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  padding:10px 16px;
+  border-radius:4px 14px 14px 14px;
+}
+.typing-dots span {
+  width:7px; height:7px;
+  background:rgba(201,168,76,0.5);
+  border-radius:50%;
+  animation:typeBounce 1.2s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay:.2s; }
+.typing-dots span:nth-child(3) { animation-delay:.4s; }
+@keyframes typeBounce { 0%,60%,100%{ transform:translateY(0); } 30%{ transform:translateY(-6px); } }
+
+/* EMPTY STATE */
+#noTopic {
+  display:none;
+  flex:1;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  text-align:center;
+  padding:40px 20px;
+  gap:16px;
+}
+#noTopic.show { display:flex; }
+#noTopic i { font-size:40px; color:rgba(255,255,255,0.15); }
+#noTopic p { color:rgba(255,255,255,0.4); font-size:14.5px; line-height:1.7; max-width:360px; }
+#noTopic a { color:var(--gold-l); font-weight:600; text-decoration:none; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:10px; }
+
+/* FADE IN */
+@keyframes fadeUp { from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:translateY(0); } }
+.fade-up { animation:fadeUp .4s ease forwards; }
+
+@media(max-width:600px) {
+  .defense-banner { padding:22px 5%; }
+  .rules-box { padding:16px; }
+  .panel-bubble, .student-bubble { max-width:92%; }
+  .feedback-card { margin-left:0; }
+  .input-area { border-radius:12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <a href="index.html" class="top-bar-logo">Project<span>Cog</span></a>
+  <a href="result.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Result</a>
+</div>
+
+<!-- DEFENSE BANNER -->
+<div class="defense-banner">
+  <div class="seal">🎓</div>
+  <h1 class="banner-title">Mock Defense <span>Simulator</span></h1>
+  <p class="banner-sub">Face a panel of academic examiners and practice answering questions about your Final Year Project before the real defense.</p>
+  <div class="topic-pill" id="topicPill">Loading topic...</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-area" id="progressArea" style="display:none">
+  <div class="progress-meta">
+    <span class="progress-label">Defense Progress</span>
+    <span class="progress-count" id="progressCount">Question 0 of 10</span>
+  </div>
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+  <div class="question-dots" id="questionDots"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- NO TOPIC STATE -->
+  <div id="noTopic">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>No project topic found. Please go back to your result page and access the Defense Simulator from there.</p>
+    <a href="result.html"><i class="fas fa-arrow-left"></i> Go to Result</a>
+  </div>
+
+  <!-- WELCOME SCREEN -->
+  <div id="welcomeScreen">
+    <div class="welcome-icon">⚖️</div>
+    <h2 class="welcome-title">Are You Ready to <span>Defend?</span></h2>
+    <p class="welcome-body">You are about to face a simulated defense panel. The AI will ask you up to 10 questions about your project. Answer each one as you would in a real defense hall.</p>
+    <div class="rules-box">
+      <h4>Defense Rules</h4>
+      <div class="rule-item"><i class="fas fa-circle"></i> Answer each question clearly and in full sentences.</div>
+      <div class="rule-item"><i class="fas fa-circle"></i> You will receive feedback and a score after every answer.</div>
+      <div class="rule-item"><i class="fas fa-circle"></i> Your final Defense Readiness Score will be shown at the end.</div>
+      <div class="rule-item"><i class="fas fa-circle"></i> Do not close this page during the session.</div>
+    </div>
+    <button class="start-btn" id="startBtn" onclick="startDefense()">
+      <i class="fas fa-gavel"></i> Begin Defense Session
+    </button>
+  </div>
+
+  <!-- CHAT SCREEN -->
+  <div id="chatScreen">
+    <div class="chat-log" id="chatLog"></div>
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="panel-avatar">👨‍⚖️</div>
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>
+    <div class="input-area" id="inputArea">
+      <textarea id="answerInput" placeholder="Type your answer here..." rows="2" onkeydown="handleKey(event)"></textarea>
+      <div class="input-footer">
+        <span class="input-hint"><i class="fas fa-info-circle"></i> Press Shift+Enter for new line</span>
+        <button class="send-btn" id="sendBtn" onclick="sendAnswer()">
+          <i class="fas fa-paper-plane"></i> Submit Answer
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .main -->
+
+<script>
+const DEFENSE_URL = 'https://ProjectCog-backend.onrender.com:5678/webhook/ProjectCog-Defense';
+
+let projectTopic = '';
+let department    = '';
+let questionNumber = 0;
+let totalQuestions = 10;
+let defenseEnded   = false;
+let isWaiting      = false;
+
+// Init dots
+function initDots() {
+  const container = document.getElementById('questionDots');
+  container.innerHTML = '';
+  for (let i = 1; i <= totalQuestions; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'q-dot';
+    dot.id = 'dot-' + i;
+    dot.textContent = i;
+    container.appendChild(dot);
+  }
+}
+
+function updateDot(num, state) {
+  const dot = document.getElementById('dot-' + num);
+  if (!dot) return;
+  dot.className = 'q-dot ' + state;
+}
+
+function updateProgress(current) {
+  const pct = Math.min((current / totalQuestions) * 100, 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = 'Question ' + current + ' of ' + totalQuestions;
+}
+
+// On load
+window.addEventListener('load', function () {
+  projectTopic = localStorage.getItem('defense_topic') || '';
+  department   = localStorage.getItem('defense_dept')  || '';
+
+  const pill = document.getElementById('topicPill');
+
+  if (!projectTopic) {
+    pill.textContent = 'No topic found';
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('noTopic').classList.add('show');
+    return;
+  }
+
+  pill.textContent = projectTopic;
+  initDots();
+});
+
+function startDefense() {
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('chatScreen').classList.add('active');
+  document.getElementById('progressArea').style.display = 'block';
+
+  // First call — questionNumber 1, studentAnswer "Ready"
+  questionNumber = 1;
+  updateDot(1, 'active');
+  updateProgress(0);
+  callDefenseWebhook('Ready');
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendAnswer();
+  }
+}
+
+function sendAnswer() {
+  if (isWaiting || defenseEnded) return;
+  const input = document.getElementById('answerInput');
+  const answer = input.value.trim();
+  if (!answer) return;
+
+  appendStudentMessage(answer);
+  input.value = '';
+  document.getElementById('sendBtn').disabled = true;
+
+  callDefenseWebhook(answer);
+}
+
+async function callDefenseWebhook(studentAnswer) {
+  isWaiting = true;
+  showTyping(true);
+
+  const payload = {
+    action: 'defense_chat',
+    projectTopic: projectTopic,
+    department: department,
+    questionNumber: questionNumber,
+    studentAnswer: studentAnswer
+  };
+
+  try {
+    const res  = await fetch(DEFENSE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error('Server error: ' + res.status);
+    const data = await res.json();
+
+    showTyping(false);
+    handleResponse(data);
+
+  } catch (err) {
+    showTyping(false);
+    appendPanelMessage('There was a connection error. Please check your internet and try again.', true);
+    document.getElementById('sendBtn').disabled = false;
+    isWaiting = false;
+  }
+}
+
+function handleResponse(data) {
+  const { feedback, score, nextQuestion, finalResult } = data;
+
+  // Show feedback + score if present (not on the first "Ready" call)
+  if (feedback) {
+    appendFeedback(feedback, score);
+    updateDot(questionNumber, 'answered');
+  }
+
+  if (finalResult) {
+    defenseEnded = true;
+    updateProgress(totalQuestions);
+    showFinalResult(finalResult, score);
+    document.getElementById('inputArea').style.display = 'none';
+    isWaiting = false;
+    return;
+  }
+
+  if (nextQuestion) {
+    questionNumber++;
+    updateDot(questionNumber, 'active');
+    updateProgress(questionNumber - 1);
+    setTimeout(() => {
+      appendPanelMessage(nextQuestion);
+      document.getElementById('sendBtn').disabled = false;
+      scrollToBottom();
+      isWaiting = false;
+    }, 400);
+  } else {
+    document.getElementById('sendBtn').disabled = false;
+    isWaiting = false;
+  }
+
+  scrollToBottom();
+}
+
+function appendPanelMessage(text, isError) {
+  const log = document.getElementById('chatLog');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-panel fade-up';
+  wrap.innerHTML = `
+    <div class="panel-avatar">👨‍⚖️</div>
+    <div class="panel-bubble">
+      <div class="panel-label">Examiner Panel</div>
+      <div class="panel-text" style="${isError ? 'color:var(--red)' : ''}">${escHtml(text)}</div>
+    </div>
+  `;
+  log.appendChild(wrap);
+  scrollToBottom();
+}
+
+function appendStudentMessage(text) {
+  const log = document.getElementById('chatLog');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-student fade-up';
+  wrap.innerHTML = `
+    <div class="student-avatar">🧑‍🎓</div>
+    <div class="student-bubble">
+      <div class="student-label">Your Answer</div>
+      <div class="student-text">${escHtml(text)}</div>
+    </div>
+  `;
+  log.appendChild(wrap);
+  scrollToBottom();
+}
+
+function appendFeedback(feedback, score) {
+  const log = document.getElementById('chatLog');
+  const wrap = document.createElement('div');
+  wrap.className = 'feedback-card fade-up';
+
+  let badgeClass = 'mid';
+  if (score !== null && score !== undefined) {
+    if (score >= 7) badgeClass = 'high';
+    else if (score <= 4) badgeClass = 'low';
+  }
+
+  const scoreBadge = (score !== null && score !== undefined)
+    ? `<span class="score-badge ${badgeClass}"><i class="fas fa-star"></i> ${score}/10</span>`
+    : '';
+
+  wrap.innerHTML = `
+    <div class="feedback-header">
+      <span class="feedback-label"><i class="fas fa-comment-dots"></i> Examiner Feedback</span>
+      ${scoreBadge}
+    </div>
+    <div class="feedback-text">${escHtml(feedback)}</div>
+  `;
+  log.appendChild(wrap);
+  scrollToBottom();
+}
+
+function showFinalResult(finalResult, score) {
+  const log = document.getElementById('chatLog');
+  const wrap = document.createElement('div');
+  wrap.className = 'final-card fade-up';
+
+  let emoji = '🏆';
+  let scoreDisplay = '';
+  if (score !== null && score !== undefined) {
+    const avg = score;
+    if (avg >= 7) emoji = '🏆';
+    else if (avg >= 5) emoji = '📋';
+    else emoji = '📚';
+    scoreDisplay = `
+      <div class="final-score-ring">
+        <div class="final-score-num">${avg}</div>
+        <div class="final-score-denom">/ 10</div>
+      </div>
+    `;
+  }
+
+  wrap.innerHTML = `
+    <div class="final-icon">${emoji}</div>
+    <div class="final-title">Defense Complete</div>
+    ${scoreDisplay}
+    <div class="final-body">${escHtml(finalResult)}</div>
+    <a href="result.html" class="retry-btn"><i class="fas fa-arrow-left"></i> Back to Your Project</a>
+  `;
+  log.appendChild(wrap);
+  scrollToBottom();
+}
+
+function showTyping(show) {
+  const el = document.getElementById('typingIndicator');
+  if (show) el.classList.add('show');
+  else el.classList.remove('show');
+}
+
+function scrollToBottom() {
+  setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/\n/g, '<br>');
+}
+</script>
+</body>
+</html>
