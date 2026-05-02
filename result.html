@@ -420,7 +420,6 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
         <!-- FREE PREVIEW -->
         <div class="dl-block-label free"><i class="fas fa-check-circle"></i> Download Free Preview</div>
         <div class="dl-btns">
-          <button class="dl-btn dl-pdf" onclick="dlPreviewPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
           <button class="dl-btn dl-word" onclick="dlPreviewWord()"><i class="fas fa-file-word"></i> Word</button>
         </div>
         <div class="dl-free-note">Preliminary pages and Chapter 1 — no payment needed</div>
@@ -429,7 +428,6 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
         <div class="dl-full-block" id="fullDlBlock">
           <div class="dl-block-label locked" id="fullDlLabel"><i class="fas fa-lock"></i> Full Project Download</div>
           <div class="dl-btns" id="fullDlBtns">
-            <button class="dl-btn-locked" id="fullPdfBtn" disabled><i class="fas fa-file-pdf"></i> PDF</button>
             <button class="dl-btn-locked" id="fullWordBtn" disabled><i class="fas fa-file-word"></i> Word</button>
           </div>
           <div class="dl-locked-note" id="fullDlNote"><i class="fas fa-lock"></i> Available after payment</div>
@@ -765,15 +763,10 @@ function deliverFullProject(data) {
   document.getElementById('fullDlLabel').innerHTML = '<i class="fas fa-unlock"></i> Full Project Download';
   document.getElementById('fullDlNote').style.display = 'none';
 
-  const pdfBtn  = document.getElementById('fullPdfBtn');
   const wordBtn = document.getElementById('fullWordBtn');
-  pdfBtn.className  = 'dl-btn dl-pdf';
   wordBtn.className = 'dl-btn dl-word';
-  pdfBtn.disabled   = false;
   wordBtn.disabled  = false;
-  pdfBtn.innerHTML  = '<i class="fas fa-file-pdf"></i> PDF';
   wordBtn.innerHTML = '<i class="fas fa-file-word"></i> Word';
-  pdfBtn.onclick    = dlFullPDF;
   wordBtn.onclick   = dlFullWord;
 
   // Show defense notice for Final Year Project only
@@ -783,19 +776,9 @@ function deliverFullProject(data) {
 }
 
 // ── DOWNLOADS ──
-function dlPreviewPDF() {
-  const content = previewText || 'ProjectCog Free Preview';
-  triggerDownload(content, 'ProjectCog_FreePreview_' + currentType + '.txt');
-}
-
 function dlPreviewWord() {
   if (!previewText) { alert('Preview not loaded yet.'); return; }
   generateWordDoc(previewText, 'ProjectCog_FreePreview_' + currentType + '.doc');
-}
-
-function dlFullPDF() {
-  if (!fullText) { alert('Full project not loaded yet. Please wait.'); return; }
-  triggerDownload(fullText, 'ProjectCog_FullProject_' + currentType + '.txt');
 }
 
 function dlFullWord() {
