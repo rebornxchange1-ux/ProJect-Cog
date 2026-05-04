@@ -434,28 +434,28 @@ footer a:hover { color:var(--indigo-l); }
         <div class="type-grid">
           <label class="type-card" id="tc_fyp" onclick="pickType('final_year_project','tc_fyp')">
             <input type="radio" name="ptype" value="final_year_project">
-            <div class="tc-top"><span class="tc-icon">🎓</span><span class="tc-price">₦10,500</span></div>
+            <div class="tc-top"><span class="tc-price">₦10,500</span></div>
             <div class="tc-name">Final Year Project</div>
             <div class="tc-desc">Complete 5-chapter research project</div>
             <span class="tc-check"><i class="fas fa-check"></i></span>
           </label>
           <label class="type-card" id="tc_siwes" onclick="pickType('siwes','tc_siwes')">
             <input type="radio" name="ptype" value="siwes">
-            <div class="tc-top"><span class="tc-icon">🏭</span><span class="tc-price">₦4,500</span></div>
+            <div class="tc-top"><span class="tc-price">₦4,500</span></div>
             <div class="tc-name">SIWES Report</div>
             <div class="tc-desc">Industrial training documentation</div>
             <span class="tc-check"><i class="fas fa-check"></i></span>
           </label>
           <label class="type-card" id="tc_seminar" onclick="pickType('seminar','tc_seminar')">
             <input type="radio" name="ptype" value="seminar">
-            <div class="tc-top"><span class="tc-icon">🎤</span><span class="tc-price">₦4,500</span></div>
+            <div class="tc-top"><span class="tc-price">₦4,500</span></div>
             <div class="tc-name">Seminar Paper</div>
             <div class="tc-desc">Academic seminar presentation</div>
             <span class="tc-check"><i class="fas fa-check"></i></span>
           </label>
           <label class="type-card" id="tc_term" onclick="pickType('term_paper','tc_term')">
             <input type="radio" name="ptype" value="term_paper">
-            <div class="tc-top"><span class="tc-icon">📄</span><span class="tc-price">₦4,500</span></div>
+            <div class="tc-top"><span class="tc-price">₦4,500</span></div>
             <div class="tc-name">Term Paper</div>
             <div class="tc-desc">Course analytical essay</div>
             <span class="tc-check"><i class="fas fa-check"></i></span>
@@ -479,6 +479,11 @@ footer a:hover { color:var(--indigo-l); }
             </select>
           </div>
           <div class="field"><label>Institution Name <span class="req">*</span></label><input type="text" id="institutionName" placeholder="e.g. University of Lagos" required></div>
+          <div class="field" id="levelField" style="display:none"><label>Level <span class="req">*</span></label>
+            <select id="studentLevel">
+              <option value="">-- Select Level --</option>
+            </select>
+          </div>
           <div class="field"><label>Department <span class="req">*</span></label><input type="text" id="department" placeholder="e.g. Computer Science" required></div>
           <div class="field"><label>Programme <span class="req">*</span></label><input type="text" id="programme" placeholder="e.g. B.Sc Computer Science" required></div>
           <div class="field"><label>Supervisor Name <span class="req">*</span></label><input type="text" id="supervisorName" placeholder="e.g. Dr. Adewale Bello" required></div>
@@ -572,11 +577,40 @@ function showCond(t){
 }
 
 function handleInstType(){
-  const v=document.getElementById('institutionType').value;
-  const p=document.getElementById('programme');
-  if(v==='polytechnic') p.placeholder='e.g. ND Computer Science / HND Computer Science';
-  else if(v==='college_of_education') p.placeholder='e.g. NCE Computer Science Education';
-  else p.placeholder='e.g. B.Sc Computer Science';
+  const v = document.getElementById('institutionType').value;
+  const p = document.getElementById('programme');
+  const levelField = document.getElementById('levelField');
+  const levelSel   = document.getElementById('studentLevel');
+
+  if(v==='polytechnic'){
+    p.placeholder = 'e.g. ND Computer Science / HND Computer Science';
+    levelSel.innerHTML = '<option value="">-- Select Level --</option>' +
+      '<option value="ND1">ND1</option>' +
+      '<option value="ND2">ND2</option>' +
+      '<option value="HND1">HND1</option>' +
+      '<option value="HND2">HND2</option>';
+    levelField.style.display = 'flex';
+  } else if(v==='college_of_education'){
+    p.placeholder = 'e.g. NCE Computer Science Education';
+    levelSel.innerHTML = '<option value="">-- Select Level --</option>' +
+      '<option value="NCE1">NCE1</option>' +
+      '<option value="NCE2">NCE2</option>' +
+      '<option value="NCE3 (Final Year)">NCE3 (Final Year)</option>';
+    levelField.style.display = 'flex';
+  } else if(v==='university'){
+    p.placeholder = 'e.g. B.Sc Computer Science';
+    levelSel.innerHTML = '<option value="">-- Select Level --</option>' +
+      '<option value="100 Level">100 Level</option>' +
+      '<option value="200 Level">200 Level</option>' +
+      '<option value="300 Level">300 Level</option>' +
+      '<option value="400 Level">400 Level</option>' +
+      '<option value="500 Level">500 Level</option>' +
+      '<option value="Final Year">Final Year</option>';
+    levelField.style.display = 'flex';
+  } else {
+    levelField.style.display = 'none';
+    levelSel.innerHTML = '<option value="">-- Select Level --</option>';
+  }
 }
 
 const REFERRAL_URL = 'https://ProjectCog-backend.onrender.com/webhook/ProjectCog-referral';
@@ -650,6 +684,7 @@ function buildPayload(){
   const payload={
     studentName:g('studentName'),matricNumber:g('matricNumber'),
     institutionType:g('institutionType'),institutionName:g('institutionName'),
+    studentLevel:g('studentLevel'),
     department:g('department'),programme:g('programme'),
     projectType:selType,projectTopic:g('projectTopic'),
     supervisorName:g('supervisorName'),academicYear:g('academicYear'),
@@ -678,6 +713,7 @@ function validate(p){
   if(!p.studentName) return 'Please enter your full name.';
   if(!p.matricNumber) return 'Please enter your matric number.';
   if(!p.institutionType) return 'Please select your institution type.';
+  if(p.institutionType && !p.studentLevel) return 'Please select your level.';
   if(!p.institutionName) return 'Please enter your institution name.';
   if(!p.department) return 'Please enter your department.';
   if(!p.programme) return 'Please enter your programme.';
