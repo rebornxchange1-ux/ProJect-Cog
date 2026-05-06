@@ -696,7 +696,7 @@ function buildPayload(){
     paymentRef:null
   };
   if(selType==='final_year_project') payload.finalYearProject={faculty:g('faculty'),category:g('category'),caseStudy:g('caseStudy')||null};
-  if(selType==='siwes') payload.siwes={organizationName:g('organizationName'),duration:g('duration')};
+  if(selType==='siwes'){payload.organizationName=g('organizationName');payload.duration=g('duration');}
   if(selType==='seminar'||selType==='term_paper') payload.seminar={courseTitle:g('courseTitle'),courseCode:g('courseCode'),lecturerName:g('lecturerName')};
   return payload;
 }
