@@ -541,6 +541,7 @@ function renderDoc(raw) {
   // Step 2 — split into lines
   const lines = text.split('\n');
   let html = '';
+  let lastRenderedHeading = '';
   let inParagraph = false;
 
   function closeParagraph() {
@@ -616,8 +617,8 @@ function renderDoc(raw) {
       const KNOWN_HEADINGS = ['DEDICATION','ACKNOWLEDGEMENT','ABSTRACT','DECLARATION','CERTIFICATION','TABLE OF CONTENTS','CHAPTER ONE','CHAPTER TWO','CHAPTER THREE','CHAPTER FOUR','CHAPTER FIVE','INTRODUCTION'];
       const stripped = cleanLine(line).replace(/<[^>]+>/g,'').toUpperCase().trim();
       if (KNOWN_HEADINGS.includes(stripped)) {
-        const prev = html.match(/text-transform:uppercase[^>]*>([^<]+)<\/p>\s*$/);
-        if (prev && prev[1].toUpperCase().trim() === stripped) continue;
+        if (lastRenderedHeading === stripped) continue;
+        lastRenderedHeading = stripped;
       }
       html += `<p style="font-family:'Times New Roman',serif;font-size:14px;text-align:center;font-weight:600;margin:6px 0;text-transform:uppercase">${cleanLine(line)}</p>`;
       continue;
