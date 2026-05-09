@@ -405,15 +405,6 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
       <hr class="divider">
 
       <!-- REFERRAL -->
-      <div id="refSection">
-        <div class="ref-label"><i class="fas fa-tag"></i> Apply referral code for ₦500 off</div>
-        <div class="ref-row">
-          <input type="text" id="refInput" placeholder="Enter code">
-          <button class="ref-apply" onclick="applyRef()">Apply</button>
-        </div>
-        <hr class="divider">
-      </div>
-
       <!-- DOWNLOAD -->
       <div class="dl-section">
 
@@ -572,7 +563,7 @@ function renderDoc(raw) {
     }
 
     // Skip sentinel lines that cause double-rendering
-    if (/^(COVER PAGE|FREE PREVIEW)$/i.test(line)) continue;
+    if (/^(COVER PAGE|FREE PREVIEW|plaintext)$/i.test(line)) continue;
     if (/=+/.test(line) && line.replace(/=/g,'').trim() === '') continue;
     if (/^CHAPTER ONE:\s*INTRODUCTION$/i.test(line) && (currentType === 'seminar' || currentType === 'term_paper')) continue;
 
@@ -779,7 +770,6 @@ function deliverFullProject(data) {
   // Update sidebar
   document.getElementById('cardTitle').textContent = '✅ Project Unlocked';
   document.getElementById('mainPayBtn').style.display = 'none';
-  document.getElementById('refSection').style.display = 'none';
 
   // Unlock download buttons
   const fullBlock = document.getElementById('fullDlBlock');
@@ -961,7 +951,6 @@ function init() {
   document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
 
   if (payload.referralCode) {
-    document.getElementById('refInput').value = payload.referralCode;
     applyRef();
   }
 
