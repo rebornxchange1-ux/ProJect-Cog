@@ -709,8 +709,16 @@ function startPolling(reference) {
 
 // ── CALLED WHEN URL HAS ?reference= (Paystack redirect) ──
 async function fetchFullProject(reference) {
-  document.getElementById('loadingOverlay').classList.add('show');
+  // Show a simple loading message since we may have no localStorage data
+  document.body.innerHTML = `
+    <div style="font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc;text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:20px">⚙️</div>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:28px;color:#0F1628;margin-bottom:12px">Loading Your Full Project</h2>
+      <p style="color:#64748b;font-size:15px;max-width:420px;line-height:1.7">Please wait while we load your complete academic project. This may take a moment.</p>
+      <div id="fetchStatus" style="margin-top:24px;color:#4B35C8;font-weight:600;font-size:14px">Connecting to server...</div>
+    </div>`;
   try {
+    document.getElementById('fetchStatus').textContent = 'Retrieving your project...';
     const res = await fetch(STAGE2_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -719,19 +727,24 @@ async function fetchFullProject(reference) {
         data: {
           reference: reference,
           status: 'success',
-          amount: currentPrice * 100,
+          amount: 1050000,
           customer: { email: '' }
         }
       })
     });
     const data = await res.json();
-    document.getElementById('loadingOverlay').classList.remove('show');
     if (data && data.status === 'success' && data.fullProject) {
-      deliverFullProject(data);
+      // Store and reload page so full UI renders properly
+      localStorage.setItem('projectcog_full_project', data.fullProject);
+      localStorage.setItem('projectcog_paid', 'true');
+      localStorage.setItem('projectcog_fetched_ref', reference);
+      // Reload without reference param so init() runs normally
+      window.location.href = window.location.pathname;
+    } else {
+      document.getElementById('fetchStatus').textContent = 'Could not load project. Please contact support with reference: ' + reference;
     }
   } catch(e) {
-    document.getElementById('loadingOverlay').classList.remove('show');
-    alert('There was an issue loading your full project. Please contact support with your payment reference: ' + reference);
+    document.getElementById('fetchStatus').textContent = 'Connection error. Please contact support with reference: ' + reference;
   }
 }
 
@@ -964,8 +977,6 @@ function init() {
     deliverFullProject({ status: 'success', fullProject: savedFull });
     return;
   }
-
-  // Check if there's a pending reference (student paid in another tab)
   const pendingRef = localStorage.getItem('projectcog_pending_ref');
   if (pendingRef && pendingRef === currentRef) {
     startPolling(pendingRef);
