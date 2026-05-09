@@ -563,9 +563,24 @@ function renderDoc(raw) {
     }
 
     // Skip sentinel lines that cause double-rendering
-    if (/^(COVER PAGE|FREE PREVIEW|plaintext)$/i.test(line)) continue;
+    if (/^(COVER PAGE|FREE PREVIEW|plaintext|```plaintext|```)$/i.test(line)) continue;
     if (/=+/.test(line) && line.replace(/=/g,'').trim() === '') continue;
     if (/^CHAPTER ONE:\s*INTRODUCTION$/i.test(line) && (currentType === 'seminar' || currentType === 'term_paper')) continue;
+
+    // Defense preparation notice — convert to clickable button block
+    if (/DEFENSE PREPARATION NOTICE/i.test(line)) {
+      closeParagraph();
+      html += `<div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border:2px solid #4B35C8;border-radius:14px;padding:24px;margin:32px 0;text-align:center">
+        <div style="font-family:'Times New Roman',serif;font-size:15px;font-weight:700;color:#0F1628;margin-bottom:12px">🎓 DEFENSE PREPARATION NOTICE</div>
+        <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:16px">Congratulations on completing your Final Year Project! Your next step is to prepare for your project defense. ProjectCog has a <strong>Mock Defense Simulator</strong> that will help you practice answering panel questions before your real defense day.</p>
+        <button onclick="startDefense()" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:linear-gradient(135deg,#4B35C8,#6B57E0);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:10px;cursor:pointer;box-shadow:0 6px 20px rgba(75,53,200,0.3)">⚖️ Start Mock Defense Session</button>
+      </div>`;
+      // Skip subsequent lines that are part of the defense notice text
+      while (i + 1 < lines.length && lines[i+1].trim() !== '' && !/^(CHAPTER|SECTION|\*\*CHAPTER|\*\*SECTION|REFERENCES)/.test(lines[i+1].trim())) {
+        i++;
+      }
+      continue;
+    }
 
     // Page break markers
     if (/^\[NEW PAGE\]$/i.test(line) || /^---+$/.test(line) || /^===+$/.test(line)) {
@@ -729,6 +744,8 @@ async function fetchFullProject(reference) {
       localStorage.setItem('projectcog_full_project', data.fullProject);
       localStorage.setItem('projectcog_paid', 'true');
       localStorage.setItem('projectcog_fetched_ref', reference);
+      localStorage.setItem('projectcog_paid_type', data.projectType || '');
+      localStorage.setItem('projectcog_paid_name', data.studentName || '');
       // Reload without reference param so init() runs normally
       window.location.href = window.location.pathname;
     } else {
@@ -930,6 +947,24 @@ function init() {
   }
 
   const rs = localStorage.getItem('projectcog_result');
+
+  // Check if already paid — came back from fetchFullProject reload
+  const alreadyPaid = localStorage.getItem('projectcog_paid');
+  const savedFull   = localStorage.getItem('projectcog_full_project');
+  if (alreadyPaid === 'true' && savedFull) {
+    const paidType = localStorage.getItem('projectcog_paid_type') || (rs ? JSON.parse(rs).projectType : 'final_year_project');
+    const paidName = localStorage.getItem('projectcog_paid_name') || '';
+    currentType  = paidType;
+    currentPrice = PRICES[currentType] || 10500;
+    document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
+    document.getElementById('metaName').textContent = paidName || '—';
+    document.getElementById('metaType').textContent = TYPE_LABELS[currentType] || '—';
+    document.getElementById('docTitle').textContent = (TYPE_LABELS[currentType] || 'Academic Project') + ' — Full Project';
+    updateFeats(currentType);
+    deliverFullProject({ status: 'success', fullProject: savedFull });
+    return;
+  }
+
   if (!rs) { window.location.href = 'generate.html'; return; }
 
   const data = JSON.parse(rs);
