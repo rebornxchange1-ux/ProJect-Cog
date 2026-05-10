@@ -994,13 +994,6 @@ function init() {
     document.getElementById('docContent').innerHTML = renderDoc(previewText);
   }
 
-  // Check if already paid in this session
-  const alreadyPaid = localStorage.getItem('projectcog_paid');
-  const savedFull   = localStorage.getItem('projectcog_full_project');
-  if (alreadyPaid === 'true' && savedFull) {
-    deliverFullProject({ status: 'success', fullProject: savedFull });
-    return;
-  }
   const pendingRef = localStorage.getItem('projectcog_pending_ref');
   if (pendingRef && pendingRef === currentRef) {
     startPolling(pendingRef);
