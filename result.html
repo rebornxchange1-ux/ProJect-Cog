@@ -725,6 +725,8 @@ async function fetchFullProject(reference) {
       <div id="fetchStatus" style="margin-top:24px;color:#4B35C8;font-weight:600;font-size:14px">Connecting to server...</div>
     </div>`;
   try {
+    const resultData = localStorage.getItem('projectcog_result');
+    const pcgRef = resultData ? (JSON.parse(resultData).reference || '') : '';
     document.getElementById('fetchStatus').textContent = 'Retrieving your project...';
     const res = await fetch(STAGE2_WEBHOOK, {
       method: 'POST',
@@ -732,7 +734,8 @@ async function fetchFullProject(reference) {
       body: JSON.stringify({
         event: 'charge.success',
         data: {
-          reference: reference,
+          reference: pcgRef || reference,
+          paystackReference: reference,
           status: 'success',
           amount: 1050000,
           customer: { email: '' }
@@ -906,17 +909,6 @@ function triggerDownload(content, filename) {
 }
 
 // ── REFERRAL ──
-function applyRef() {
-  const code = document.getElementById('refInput').value.trim();
-  if (!code)       { alert('Please enter a referral code.'); return; }
-  if (discApplied) { alert('A referral code has already been applied.'); return; }
-  discApplied   = true;
-  currentPrice -= 500;
-  document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
-  document.getElementById('discBadge').classList.add('show');
-  alert('Referral code applied. A ₦500 discount has been added.');
-}
-
 // ── SHARE ──
 function shareWA() {
   const txt = encodeURIComponent('I just used ProjectCog to generate my academic project!\n\nTry it: https://rebornxchange1-ux.github.io/ProJect-Cog/index.html\n\nNigerian students, this is a game changer!');
@@ -985,10 +977,6 @@ function init() {
   document.getElementById('metaType').textContent = TYPE_LABELS[currentType] || '—';
   document.getElementById('metaInst').textContent = payload.institutionName || '—';
   document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
-
-  if (payload.referralCode) {
-    applyRef();
-  }
 
   updateFeats(currentType);
   if (previewText) {
