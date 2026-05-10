@@ -564,11 +564,12 @@ function renderDoc(raw) {
 
     // Skip sentinel lines that cause double-rendering
     if (/^(COVER PAGE|FREE PREVIEW|plaintext|```plaintext|```)$/i.test(line)) continue;
+    if (/DEFENSE PREPARATION NOTICE/i.test(line) && currentType !== 'final_year_project') continue;
     if (/=+/.test(line) && line.replace(/=/g,'').trim() === '') continue;
     if (/^CHAPTER ONE:\s*INTRODUCTION$/i.test(line) && (currentType === 'seminar' || currentType === 'term_paper')) continue;
 
-    // Defense preparation notice — convert to clickable button block
-    if (/DEFENSE PREPARATION NOTICE/i.test(line)) {
+    // Defense preparation notice — only for final year project
+    if (/DEFENSE PREPARATION NOTICE/i.test(line) && currentType === 'final_year_project') {
       closeParagraph();
       html += `<div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border:2px solid #4B35C8;border-radius:14px;padding:24px;margin:32px 0;text-align:center">
         <div style="font-family:'Times New Roman',serif;font-size:15px;font-weight:700;color:#0F1628;margin-bottom:12px">🎓 DEFENSE PREPARATION NOTICE</div>
