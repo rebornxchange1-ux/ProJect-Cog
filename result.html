@@ -725,8 +725,9 @@ async function fetchFullProject(reference) {
       <div id="fetchStatus" style="margin-top:24px;color:#4B35C8;font-weight:600;font-size:14px">Connecting to server...</div>
     </div>`;
   try {
+    const pendingRef = localStorage.getItem('projectcog_pending_ref');
     const resultData = localStorage.getItem('projectcog_result');
-    const pcgRef = resultData ? (JSON.parse(resultData).reference || '') : '';
+    const pcgRef = pendingRef || (resultData ? (JSON.parse(resultData).reference || '') : '');
     document.getElementById('fetchStatus').textContent = 'Retrieving your project...';
     const res = await fetch(STAGE2_WEBHOOK, {
       method: 'POST',
