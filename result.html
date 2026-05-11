@@ -942,10 +942,14 @@ function init() {
 
   const rs = localStorage.getItem('projectcog_result');
 
-  // Check if already paid — came back from fetchFullProject reload
-  const alreadyPaid = localStorage.getItem('projectcog_paid');
-  const savedFull   = localStorage.getItem('projectcog_full_project');
-  if (alreadyPaid === 'true' && savedFull) {
+  // Check if already paid — only show paid project if it matches current submission
+  const alreadyPaid   = localStorage.getItem('projectcog_paid');
+  const savedFull     = localStorage.getItem('projectcog_full_project');
+  const fetchedRef    = localStorage.getItem('projectcog_fetched_ref');
+  const currentResult = rs ? JSON.parse(rs) : {};
+  const currentResultRef = currentResult.reference || '';
+
+  if (alreadyPaid === 'true' && savedFull && fetchedRef && fetchedRef === currentResultRef) {
     const paidType = localStorage.getItem('projectcog_paid_type') || (rs ? JSON.parse(rs).projectType : 'final_year_project');
     const paidName = localStorage.getItem('projectcog_paid_name') || '';
     currentType  = paidType;
