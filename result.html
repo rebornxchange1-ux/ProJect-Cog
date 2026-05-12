@@ -664,14 +664,12 @@ function updateFeats(type) {
 // ── PAYMENT ──
 function goToPayment(e) {
   e.preventDefault();
-  // Save reference to localStorage so we can retrieve full project after payment
   const ref = currentRef || ('PCG-' + Date.now());
   localStorage.setItem('projectcog_pending_ref', ref);
   localStorage.setItem('projectcog_pending_type', currentType);
   const link = PAYMENT_LINKS[currentType] || PAYMENT_LINKS.final_year_project;
-  window.open(link, '_blank');
-  // Start polling for payment confirmation
-  startPolling(ref);
+  // Open in SAME tab so localStorage is preserved when Paystack redirects back
+  window.location.href = link;
 }
 
 // ── POLLING — checks every 10 seconds if payment was confirmed ──
