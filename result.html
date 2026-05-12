@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://js.paystack.co/v1/inline.js"></script>
 <style>
 :root {
   --navy:      #0F1628;
@@ -666,16 +667,37 @@ function goToPayment(e) {
   e.preventDefault();
   const ref = currentRef || ('PCG-' + Date.now());
   const payload = localStorage.getItem('projectcog_payload');
+  const studentData = payload ? JSON.parse(payload) : {};
 
-  // Save full student payload in multiple places before leaving page
+  // Save to localStorage as backup
   localStorage.setItem('projectcog_pending_ref', ref);
   localStorage.setItem('projectcog_pending_type', currentType);
   localStorage.setItem('projectcog_student_payload', payload || '{}');
-  sessionStorage.setItem('projectcog_pending_ref', ref);
-  sessionStorage.setItem('projectcog_student_payload', payload || '{}');
 
-  const link = PAYMENT_LINKS[currentType] || PAYMENT_LINKS.final_year_project;
-  window.location.href = link;
+  const amount = (currentPrice || PRICES[currentType] || 10500) * 100;
+
+  const handler = PaystackPop.setup({
+    key: 'pk_live_912073a14e3419374cff54322f1507e6f3a83c2c',
+    email: studentData.email || 'student@projectcog.com',
+    amount: amount,
+    currency: 'NGN',
+    ref: ref,
+    metadata: {
+      pcgref: ref,
+      studentName: studentData.studentName || '',
+      projectType: studentData.projectType || ''
+    },
+    callback: function(response) {
+      // Payment successful — response.reference is the Paystack reference
+      // But we use ref (PCG reference) directly since we set it as the Paystack ref
+      fetchFullProject(ref);
+    },
+    onClose: function() {
+      // Student closed payment popup without paying
+      alert('Payment cancelled. Click Pay to try again.');
+    }
+  });
+  handler.openIframe();
 }
 
 // ── POLLING — checks every 10 seconds if payment was confirmed ──
@@ -958,7 +980,12 @@ function init() {
   // Check Paystack redirect FIRST before anything else
   const urlParams  = new URLSearchParams(window.location.search);
   const refFromURL = urlParams.get('reference') || urlParams.get('trxref');
+  const pcgFromURL = urlParams.get('pcgref');
   if (refFromURL) {
+    // If Paystack sent back a pcgref parameter, save it as pending ref
+    if (pcgFromURL) {
+      localStorage.setItem('projectcog_pending_ref', pcgFromURL);
+    }
     fetchFullProject(refFromURL);
     return;
   }
