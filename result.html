@@ -665,10 +665,18 @@ function updateFeats(type) {
 function goToPayment(e) {
   e.preventDefault();
   const ref = currentRef || ('PCG-' + Date.now());
+  const rs = localStorage.getItem('projectcog_result');
+  const payload = rs ? JSON.parse(rs) : {};
+
+  // Save full student payload in multiple places before leaving page
+  const studentData = JSON.stringify(payload);
   localStorage.setItem('projectcog_pending_ref', ref);
   localStorage.setItem('projectcog_pending_type', currentType);
+  localStorage.setItem('projectcog_student_payload', studentData);
+  sessionStorage.setItem('projectcog_pending_ref', ref);
+  sessionStorage.setItem('projectcog_student_payload', studentData);
+
   const link = PAYMENT_LINKS[currentType] || PAYMENT_LINKS.final_year_project;
-  // Open in SAME tab so localStorage is preserved when Paystack redirects back
   window.location.href = link;
 }
 
@@ -723,22 +731,41 @@ async function fetchFullProject(reference) {
       <div id="fetchStatus" style="margin-top:24px;color:#4B35C8;font-weight:600;font-size:14px">Connecting to server...</div>
     </div>`;
   try {
-    const pendingRef = localStorage.getItem('projectcog_pending_ref');
-    const resultData = localStorage.getItem('projectcog_result');
-    const pcgRef = pendingRef || (resultData ? (JSON.parse(resultData).reference || '') : '');
+    // Read student payload from storage
+    const studentDataStr = sessionStorage.getItem('projectcog_student_payload')
+                        || localStorage.getItem('projectcog_student_payload');
+    const studentData = studentDataStr ? JSON.parse(studentDataStr) : {};
+    const pcgRef = sessionStorage.getItem('projectcog_pending_ref')
+                || localStorage.getItem('projectcog_pending_ref')
+                || studentData.reference
+                || reference;
+
     document.getElementById('fetchStatus').textContent = 'Retrieving your project...';
     const res = await fetch(STAGE2_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        event: 'charge.success',
-        data: {
-          reference: pcgRef || reference,
-          paystackReference: reference,
-          status: 'success',
-          amount: 1050000,
-          customer: { email: '' }
-        }
+        reference: pcgRef,
+        paystackReference: reference,
+        studentName: studentData.studentName || '',
+        matricNumber: studentData.matricNumber || '',
+        institutionType: studentData.institutionType || '',
+        institutionName: studentData.institutionName || '',
+        department: studentData.department || '',
+        programme: studentData.programme || '',
+        studentLevel: studentData.studentLevel || '',
+        projectType: studentData.projectType || '',
+        projectTopic: studentData.projectTopic || '',
+        supervisorName: studentData.supervisorName || '',
+        academicYear: studentData.academicYear || '',
+        faculty: studentData.faculty || '',
+        courseTitle: studentData.courseTitle || '',
+        courseCode: studentData.courseCode || '',
+        lecturerName: studentData.lecturerName || '',
+        organizationName: studentData.organizationName || '',
+        duration: studentData.duration || '',
+        caseStudy: studentData.caseStudy || '',
+        referralCode: studentData.referralCode || ''
       })
     });
     const data = await res.json();
