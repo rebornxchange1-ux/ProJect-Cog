@@ -665,16 +665,14 @@ function updateFeats(type) {
 function goToPayment(e) {
   e.preventDefault();
   const ref = currentRef || ('PCG-' + Date.now());
-  const rs = localStorage.getItem('projectcog_result');
-  const payload = rs ? JSON.parse(rs) : {};
+  const payload = localStorage.getItem('projectcog_payload');
 
   // Save full student payload in multiple places before leaving page
-  const studentData = JSON.stringify(payload);
   localStorage.setItem('projectcog_pending_ref', ref);
   localStorage.setItem('projectcog_pending_type', currentType);
-  localStorage.setItem('projectcog_student_payload', studentData);
+  localStorage.setItem('projectcog_student_payload', payload || '{}');
   sessionStorage.setItem('projectcog_pending_ref', ref);
-  sessionStorage.setItem('projectcog_student_payload', studentData);
+  sessionStorage.setItem('projectcog_student_payload', payload || '{}');
 
   const link = PAYMENT_LINKS[currentType] || PAYMENT_LINKS.final_year_project;
   window.location.href = link;
@@ -731,9 +729,9 @@ async function fetchFullProject(reference) {
       <div id="fetchStatus" style="margin-top:24px;color:#4B35C8;font-weight:600;font-size:14px">Connecting to server...</div>
     </div>`;
   try {
-    // Read student payload from storage
     const studentDataStr = sessionStorage.getItem('projectcog_student_payload')
-                        || localStorage.getItem('projectcog_student_payload');
+                        || localStorage.getItem('projectcog_student_payload')
+                        || localStorage.getItem('projectcog_payload');
     const studentData = studentDataStr ? JSON.parse(studentDataStr) : {};
     const pcgRef = sessionStorage.getItem('projectcog_pending_ref')
                 || localStorage.getItem('projectcog_pending_ref')
@@ -758,13 +756,13 @@ async function fetchFullProject(reference) {
         projectTopic: studentData.projectTopic || '',
         supervisorName: studentData.supervisorName || '',
         academicYear: studentData.academicYear || '',
-        faculty: studentData.faculty || '',
-        courseTitle: studentData.courseTitle || '',
-        courseCode: studentData.courseCode || '',
-        lecturerName: studentData.lecturerName || '',
-        organizationName: studentData.organizationName || '',
-        duration: studentData.duration || '',
-        caseStudy: studentData.caseStudy || '',
+        faculty: studentData.faculty || (studentData.finalYearProject?.faculty) || '',
+        courseTitle: studentData.courseTitle || (studentData.seminar?.courseTitle) || (studentData.termPaper?.courseTitle) || '',
+        courseCode: studentData.courseCode || (studentData.seminar?.courseCode) || (studentData.termPaper?.courseCode) || '',
+        lecturerName: studentData.lecturerName || (studentData.seminar?.lecturerName) || (studentData.termPaper?.lecturerName) || '',
+        organizationName: studentData.organizationName || (studentData.siwes?.organizationName) || '',
+        duration: studentData.duration || (studentData.siwes?.duration) || '',
+        caseStudy: studentData.caseStudy || (studentData.finalYearProject?.caseStudy) || '',
         referralCode: studentData.referralCode || ''
       })
     });
