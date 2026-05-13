@@ -1025,7 +1025,7 @@ function init() {
   currentType  = payload.projectType || data.projectType || 'final_year_project';
   currentPrice = PRICES[currentType] || 10500;
   previewText  = data.generatedProject || '';
-  currentRef   = data.reference || '';
+  currentRef   = data.reference || payload.reference || localStorage.getItem('projectcog_pending_ref') || '';
 
   document.getElementById('docTitle').textContent = (TYPE_LABELS[currentType] || 'Academic Project') + ' — Free Preview';
   document.getElementById('metaName').textContent = payload.studentName || data.studentName || '—';
