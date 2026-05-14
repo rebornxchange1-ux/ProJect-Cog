@@ -890,7 +890,7 @@ function init() {
   const currentResult = rs ? JSON.parse(rs) : {};
   const currentResultRef = currentResult.reference || '';
 
-  if (alreadyPaid === 'true' && savedFull && fetchedRef && fetchedRef === currentResultRef) {
+  if (alreadyPaid === 'true' && savedFull) {
     const paidType = localStorage.getItem('projectcog_paid_type') || (rs ? JSON.parse(rs).projectType : 'final_year_project');
     const paidName = localStorage.getItem('projectcog_paid_name') || '';
     currentType  = paidType;
