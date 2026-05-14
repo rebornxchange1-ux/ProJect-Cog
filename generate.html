@@ -625,7 +625,6 @@ async function applyRef(){
   if(!code){ showRefFeedback('Please enter a referral code first.','error'); return; }
   if(discountApplied){ showRefFeedback('A referral code has already been applied.','error'); return; }
 
-  // Loading state
   btn.disabled = true;
   btn.textContent = 'Checking...';
   fb.style.display = 'none';
@@ -672,8 +671,6 @@ function showRefFeedback(msg, type){
     fb.style.color = '#dc2626';
   }
 }
-
-
 
 function g(id){return document.getElementById(id)?.value?.trim()||'';}
 
@@ -723,13 +720,31 @@ function validate(p){
   return null;
 }
 
-document.getElementById('projForm').addEventListener('submit',function(e){
+document.getElementById('projForm').addEventListener('submit', function(e) {
   e.preventDefault();
-  const payload=buildPayload();
-  const err=validate(payload);
-  if(err){showErr(err);return;}
-  localStorage.setItem('projectcog_payload',JSON.stringify(payload));
-  window.location.href='processing.html';
+  const payload = buildPayload();
+  const err = validate(payload);
+  if(err){ showErr(err); return; }
+
+  // ── FIX: Generate a unique PCG reference and attach it to the payload ──
+  // This reference ties Stage 1 → localStorage → Paystack → Stage 2 together.
+  // Without this, result.html has no reference and Stage 2 receives empty data.
+  const pcgRef = 'PCG-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+  payload.reference = pcgRef;
+
+  // Save payload (now includes reference) to localStorage
+  localStorage.setItem('projectcog_payload', JSON.stringify(payload));
+
+  // Also save reference separately as a reliable backup
+  localStorage.setItem('projectcog_pending_ref', pcgRef);
+
+  // Clear any previous paid session so a fresh submission doesn't show old paid project
+  localStorage.removeItem('projectcog_paid');
+  localStorage.removeItem('projectcog_full_project');
+  localStorage.removeItem('projectcog_fetched_ref');
+  localStorage.removeItem('projectcog_result');
+
+  window.location.href = 'processing.html';
 });
 </script>
 </body>
