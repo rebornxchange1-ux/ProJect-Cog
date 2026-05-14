@@ -405,7 +405,6 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
 
       <hr class="divider">
 
-      <!-- REFERRAL -->
       <!-- DOWNLOAD -->
       <div class="dl-section">
 
@@ -457,15 +456,8 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
 
 <script>
 // ── CONFIGURATION ──
-// IMPORTANT: Replace this with your actual n8n Stage 2 production webhook URL
 const STAGE2_WEBHOOK = 'https://exchnage-tech.app.n8n.cloud/webhook/ProjectCog-Payment';
 
-const PAYMENT_LINKS = {
-  final_year_project: 'https://paystack.shop/pay/jqr4kj219s',
-  siwes:              'https://paystack.shop/pay/8wvewhgb8z',
-  seminar:            'https://paystack.shop/pay/5sx10pb8lk',
-  term_paper:         'https://paystack.shop/pay/5sx10pb8lk'
-};
 const PRICES = {
   final_year_project: 10500,
   siwes:              4500,
@@ -524,13 +516,11 @@ let currentRef    = '';
 
 // ── RENDER ACADEMIC DOCUMENT ──
 function renderDoc(raw) {
-  // Step 1 — normalize escaped newlines
   let text = raw
     .replace(/\\n/g, '\n')
     .replace(/\\"/g, '"')
     .replace(/\\t/g, '    ');
 
-  // Step 2 — split into lines
   const lines = text.split('\n');
   let html = '';
   let lastRenderedHeading = '';
@@ -540,15 +530,14 @@ function renderDoc(raw) {
     if (inParagraph) { html += '</p>'; inParagraph = false; }
   }
 
-  // Strip all stray markdown from a line
   function cleanLine(line) {
     return line
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') // bold first
-      .replace(/\*(.+?)\*/g, '$1')                        // italic — strip stars, keep text
-      .replace(/\*/g, '')                                  // any remaining asterisks
-      .replace(/={3,}/g, '')                               // === lines
-      .replace(/#{1,6}\s*/g, '')                           // stray hashes
-      .replace(/^[-–]{3,}$/, '')                           // horizontal rules as text
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '$1')
+      .replace(/\*/g, '')
+      .replace(/={3,}/g, '')
+      .replace(/#{1,6}\s*/g, '')
+      .replace(/^[-–]{3,}$/, '')
       .trim();
   }
 
@@ -556,20 +545,17 @@ function renderDoc(raw) {
     const raw_line = lines[i];
     const line     = raw_line.trim();
 
-    // Empty line
     if (!line) {
       closeParagraph();
       html += '<div style="margin-bottom:10px"></div>';
       continue;
     }
 
-    // Skip sentinel lines that cause double-rendering
     if (/^(COVER PAGE|FREE PREVIEW|plaintext|```plaintext|```)$/i.test(line)) continue;
     if (/DEFENSE PREPARATION NOTICE/i.test(line) && currentType !== 'final_year_project') continue;
     if (/=+/.test(line) && line.replace(/=/g,'').trim() === '') continue;
     if (/^CHAPTER ONE:\s*INTRODUCTION$/i.test(line) && (currentType === 'seminar' || currentType === 'term_paper')) continue;
 
-    // Defense preparation notice — only for final year project
     if (/DEFENSE PREPARATION NOTICE/i.test(line) && currentType === 'final_year_project') {
       closeParagraph();
       html += `<div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border:2px solid #4B35C8;border-radius:14px;padding:24px;margin:32px 0;text-align:center">
@@ -577,49 +563,42 @@ function renderDoc(raw) {
         <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:16px">Congratulations on completing your Final Year Project! Your next step is to prepare for your project defense. ProjectCog has a <strong>Mock Defense Simulator</strong> that will help you practice answering panel questions before your real defense day.</p>
         <button onclick="startDefense()" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:linear-gradient(135deg,#4B35C8,#6B57E0);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:10px;cursor:pointer;box-shadow:0 6px 20px rgba(75,53,200,0.3)">⚖️ Start Mock Defense Session</button>
       </div>`;
-      // Skip subsequent lines that are part of the defense notice text
       while (i + 1 < lines.length && lines[i+1].trim() !== '' && !/^(CHAPTER|SECTION|\*\*CHAPTER|\*\*SECTION|REFERENCES)/.test(lines[i+1].trim())) {
         i++;
       }
       continue;
     }
 
-    // Page break markers
     if (/^\[NEW PAGE\]$/i.test(line) || /^---+$/.test(line) || /^===+$/.test(line)) {
       closeParagraph();
       html += '<div style="page-break-after:always;border-top:1px solid #ddd;margin:28px 0"></div>';
       continue;
     }
 
-    // H1
     if (line.startsWith('# ')) {
       closeParagraph();
       html += `<h1 style="font-family:'Times New Roman',serif;font-size:15px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.04em;margin:20px 0 10px;line-height:1.5">${cleanLine(line.slice(2))}</h1>`;
       continue;
     }
 
-    // H2
     if (line.startsWith('## ')) {
       closeParagraph();
       html += `<h2 style="font-family:'Times New Roman',serif;font-size:14.5px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.03em;margin:22px 0 10px">${cleanLine(line.slice(3))}</h2>`;
       continue;
     }
 
-    // H3
     if (line.startsWith('### ')) {
       closeParagraph();
       html += `<h3 style="font-family:'Times New Roman',serif;font-size:14px;font-weight:700;text-align:left;text-transform:uppercase;margin:18px 0 8px">${cleanLine(line.slice(4))}</h3>`;
       continue;
     }
 
-    // Lines that are all asterisks or equals — skip entirely
     if (/^[*=\-_]{3,}$/.test(line)) {
       closeParagraph();
       html += '<div style="margin-bottom:8px"></div>';
       continue;
     }
 
-    // ALL CAPS short lines — centered label
     if (line === line.toUpperCase() && line.length < 80 && !/[.,:;?!]/.test(line) && line.length > 2) {
       closeParagraph();
       const KNOWN_HEADINGS = ['DEDICATION','ACKNOWLEDGEMENT','ABSTRACT','DECLARATION','CERTIFICATION','TABLE OF CONTENTS','CHAPTER ONE','CHAPTER TWO','CHAPTER THREE','CHAPTER FOUR','CHAPTER FIVE','INTRODUCTION'];
@@ -632,14 +611,12 @@ function renderDoc(raw) {
       continue;
     }
 
-    // Signature lines
     if (/^_{3,}/.test(line) || /Signed:\s*_{2,}/.test(line) || /Date:\s*_{2,}/.test(line)) {
       closeParagraph();
       html += `<p style="font-family:'Times New Roman',serif;font-size:14px;margin:8px 0;color:#444">${line}</p>`;
       continue;
     }
 
-    // Normal paragraph
     const cleaned = cleanLine(line);
     if (!cleaned) continue;
 
@@ -663,13 +640,21 @@ function updateFeats(type) {
 }
 
 // ── PAYMENT ──
+// FIX: Never generate a new reference. Always use currentRef from Stage 1.
+// If currentRef is missing, the student must regenerate — do not proceed.
 function goToPayment(e) {
   e.preventDefault();
-  const ref = currentRef || ('PCG-' + Date.now());
+
+  if (!currentRef) {
+    alert('Session error: your project reference is missing. Please go back to the form and generate your preview again.');
+    return;
+  }
+
+  const ref = currentRef;
   const payload = localStorage.getItem('projectcog_payload');
   const studentData = payload ? JSON.parse(payload) : {};
 
-  // Save to localStorage as backup
+  // Save to localStorage only — sessionStorage is wiped after Paystack redirect
   localStorage.setItem('projectcog_pending_ref', ref);
   localStorage.setItem('projectcog_pending_type', currentType);
   localStorage.setItem('projectcog_student_payload', payload || '{}');
@@ -688,19 +673,16 @@ function goToPayment(e) {
       projectType: studentData.projectType || ''
     },
     callback: function(response) {
-      // Payment successful — response.reference is the Paystack reference
-      // But we use ref (PCG reference) directly since we set it as the Paystack ref
       fetchFullProject(ref);
     },
     onClose: function() {
-      // Student closed payment popup without paying
       alert('Payment cancelled. Click Pay to try again.');
     }
   });
   handler.openIframe();
 }
 
-// ── POLLING — checks every 10 seconds if payment was confirmed ──
+// ── POLLING ──
 let pollInterval = null;
 let pollCount    = 0;
 
@@ -709,7 +691,6 @@ function startPolling(reference) {
   pollCount = 0;
   pollInterval = setInterval(async () => {
     pollCount++;
-    // Stop polling after 15 minutes (90 checks × 10 seconds)
     if (pollCount > 90) {
       clearInterval(pollInterval);
       return;
@@ -740,9 +721,10 @@ function startPolling(reference) {
   }, 10000);
 }
 
-// ── CALLED WHEN URL HAS ?reference= (Paystack redirect) ──
+// ── FETCH FULL PROJECT AFTER PAYMENT ──
+// FIX: Read ONLY from localStorage — sessionStorage is wiped on Paystack redirect.
+// FIX: Use the saved PCG reference, not a new one.
 async function fetchFullProject(reference) {
-  // Show a simple loading message since we may have no localStorage data
   document.body.innerHTML = `
     <div style="font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc;text-align:center;padding:40px 20px">
       <div style="font-size:48px;margin-bottom:20px">⚙️</div>
@@ -750,17 +732,20 @@ async function fetchFullProject(reference) {
       <p style="color:#64748b;font-size:15px;max-width:420px;line-height:1.7">Please wait while we load your complete academic project. This may take a moment.</p>
       <div id="fetchStatus" style="margin-top:24px;color:#4B35C8;font-weight:600;font-size:14px">Connecting to server...</div>
     </div>`;
+
   try {
-    const studentDataStr = sessionStorage.getItem('projectcog_student_payload')
-                        || localStorage.getItem('projectcog_student_payload')
+    // FIX: Only use localStorage — sessionStorage dies after Paystack redirect
+    const studentDataStr = localStorage.getItem('projectcog_student_payload')
                         || localStorage.getItem('projectcog_payload');
     const studentData = studentDataStr ? JSON.parse(studentDataStr) : {};
-    const pcgRef = sessionStorage.getItem('projectcog_pending_ref')
-                || localStorage.getItem('projectcog_pending_ref')
+
+    // FIX: Use the saved PCG reference as priority — this is what Stage 1 created
+    const pcgRef = localStorage.getItem('projectcog_pending_ref')
                 || studentData.reference
                 || reference;
 
     document.getElementById('fetchStatus').textContent = 'Retrieving your project...';
+
     const res = await fetch(STAGE2_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -788,21 +773,22 @@ async function fetchFullProject(reference) {
         referralCode: studentData.referralCode || ''
       })
     });
+
     const data = await res.json();
+
     if (data && data.status === 'success' && data.fullProject) {
-      // Store and reload page so full UI renders properly
       localStorage.setItem('projectcog_full_project', data.fullProject);
       localStorage.setItem('projectcog_paid', 'true');
-      localStorage.setItem('projectcog_fetched_ref', reference);
+      localStorage.setItem('projectcog_fetched_ref', pcgRef);
       localStorage.setItem('projectcog_paid_type', data.projectType || '');
       localStorage.setItem('projectcog_paid_name', data.studentName || '');
-      // Reload without reference param so init() runs normally
+      // Reload page so full UI renders properly
       window.location.href = window.location.pathname;
     } else {
-      document.getElementById('fetchStatus').textContent = 'Could not load project. Please contact support with reference: ' + reference;
+      document.getElementById('fetchStatus').textContent = 'Could not load project. Please contact support with reference: ' + pcgRef;
     }
   } catch(e) {
-    document.getElementById('fetchStatus').textContent = 'Connection error. Please contact support with reference: ' + reference;
+    document.getElementById('fetchStatus').textContent = 'Connection error. Please contact support with reference: ' + (localStorage.getItem('projectcog_pending_ref') || reference);
   }
 }
 
@@ -811,34 +797,22 @@ function deliverFullProject(data) {
   isPaid    = true;
   fullText  = data.fullProject || data.generatedProject || '';
 
-  // Save full project to localStorage
   localStorage.setItem('projectcog_full_project', fullText);
   localStorage.setItem('projectcog_paid', 'true');
 
-  // Show full project in document box
   const docContent = document.getElementById('docContent');
   docContent.innerHTML = renderDoc(fullText);
   docContent.classList.add('full-mode');
 
-  // Hide lock overlay
   document.getElementById('lockFade').style.display = 'none';
-
-  // Update banners
   document.getElementById('previewBanner').style.display = 'none';
   document.getElementById('unlockedBanner').style.display = 'flex';
-
-  // Update tags
   document.getElementById('freeTag').style.display  = 'none';
   document.getElementById('paidTag').style.display  = 'inline-flex';
-
-  // Update title
   document.getElementById('docTitle').textContent = (TYPE_LABELS[currentType] || 'Academic Project') + ' — Full Project';
-
-  // Update sidebar
   document.getElementById('cardTitle').textContent = '✅ Project Unlocked';
   document.getElementById('mainPayBtn').style.display = 'none';
 
-  // Unlock download buttons
   const fullBlock = document.getElementById('fullDlBlock');
   fullBlock.classList.add('paid');
   document.getElementById('fullDlLabel').className = 'dl-block-label unlocked';
@@ -851,7 +825,6 @@ function deliverFullProject(data) {
   wordBtn.innerHTML = '<i class="fas fa-file-word"></i> Word';
   wordBtn.onclick   = dlFullWord;
 
-  // Show defense notice for Final Year Project only
   if (currentType === 'final_year_project') {
     document.getElementById('defenseNotice').style.display = 'block';
   }
@@ -868,13 +841,7 @@ function dlFullWord() {
   generateWordDoc(fullText, 'ProjectCog_FullProject_' + currentType + '.doc');
 }
 
-function dlPreviewWordDoc() {
-  if (!previewText) { alert('Preview not loaded yet.'); return; }
-  generateWordDoc(previewText, 'ProjectCog_FreePreview_' + currentType + '.doc');
-}
-
 function generateWordDoc(rawText, filename) {
-  // Strip all markdown symbols for Word output
   const clean = rawText
     .replace(/\\n/g, '\n')
     .replace(/\*\*(.+?)\*\*/g, '$1')
@@ -885,7 +852,6 @@ function generateWordDoc(rawText, filename) {
     .replace(/^[-–]{3,}$/gm, '')
     .trim();
 
-  // Build Word HTML (Word reads .doc as HTML)
   const wordHtml = `
 <html xmlns:o='urn:schemas-microsoft-com:office:office'
       xmlns:w='urn:schemas-microsoft-com:office:word'
@@ -894,35 +860,10 @@ function generateWordDoc(rawText, filename) {
 <meta charset='utf-8'>
 <style>
   @page { margin: 1in; }
-  body {
-    font-family: 'Times New Roman', serif;
-    font-size: 12pt;
-    line-height: 2.0;
-    color: #000;
-  }
-  p {
-    font-family: 'Times New Roman', serif;
-    font-size: 12pt;
-    line-height: 2.0;
-    text-align: justify;
-    margin: 0 0 12pt 0;
-  }
-  h1, h2 {
-    font-family: 'Times New Roman', serif;
-    font-size: 12pt;
-    font-weight: bold;
-    text-align: center;
-    text-transform: uppercase;
-    margin: 18pt 0 10pt 0;
-  }
-  h3 {
-    font-family: 'Times New Roman', serif;
-    font-size: 12pt;
-    font-weight: bold;
-    text-align: left;
-    text-transform: uppercase;
-    margin: 14pt 0 8pt 0;
-  }
+  body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 2.0; color: #000; }
+  p { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 2.0; text-align: justify; margin: 0 0 12pt 0; }
+  h1, h2 { font-family: 'Times New Roman', serif; font-size: 12pt; font-weight: bold; text-align: center; text-transform: uppercase; margin: 18pt 0 10pt 0; }
+  h3 { font-family: 'Times New Roman', serif; font-size: 12pt; font-weight: bold; text-align: left; text-transform: uppercase; margin: 14pt 0 8pt 0; }
 </style>
 </head>
 <body>
@@ -944,17 +885,6 @@ ${clean.split('\n').map(line => {
   URL.revokeObjectURL(url);
 }
 
-function triggerDownload(content, filename) {
-  const blob = new Blob([content], { type: 'text/plain' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ── REFERRAL ──
 // ── SHARE ──
 function shareWA() {
   const txt = encodeURIComponent('I just used ProjectCog to generate my academic project!\n\nTry it: https://rebornxchange1-ux.github.io/ProJect-Cog/index.html\n\nNigerian students, this is a game changer!');
@@ -977,12 +907,11 @@ function startDefense() {
 
 // ── INIT ──
 function init() {
-  // Check Paystack redirect FIRST before anything else
+  // Check Paystack redirect FIRST
   const urlParams  = new URLSearchParams(window.location.search);
   const refFromURL = urlParams.get('reference') || urlParams.get('trxref');
   const pcgFromURL = urlParams.get('pcgref');
   if (refFromURL) {
-    // If Paystack sent back a pcgref parameter, save it as pending ref
     if (pcgFromURL) {
       localStorage.setItem('projectcog_pending_ref', pcgFromURL);
     }
@@ -992,7 +921,6 @@ function init() {
 
   const rs = localStorage.getItem('projectcog_result');
 
-  // Check if already paid — only show paid project if it matches current submission
   const alreadyPaid   = localStorage.getItem('projectcog_paid');
   const savedFull     = localStorage.getItem('projectcog_full_project');
   const fetchedRef    = localStorage.getItem('projectcog_fetched_ref');
@@ -1017,15 +945,16 @@ function init() {
 
   const data = JSON.parse(rs);
 
-  // Always read projectType from payload first — this is what the student selected
-  // Fall back to result data only if payload missing
   const ps      = localStorage.getItem('projectcog_payload');
   const payload = ps ? JSON.parse(ps) : {};
 
   currentType  = payload.projectType || data.projectType || 'final_year_project';
   currentPrice = PRICES[currentType] || 10500;
   previewText  = data.generatedProject || '';
-  currentRef   = data.reference || payload.reference || localStorage.getItem('projectcog_pending_ref') || '';
+
+  // FIX: Read reference from payload first (where generate.html now saves it),
+  // then fall back to result data, then to the separately saved pending ref.
+  currentRef = payload.reference || data.reference || localStorage.getItem('projectcog_pending_ref') || '';
 
   document.getElementById('docTitle').textContent = (TYPE_LABELS[currentType] || 'Academic Project') + ' — Free Preview';
   document.getElementById('metaName').textContent = payload.studentName || data.studentName || '—';
