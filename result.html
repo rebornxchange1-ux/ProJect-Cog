@@ -682,44 +682,7 @@ function goToPayment(e) {
   handler.openIframe();
 }
 
-// ── POLLING ──
-let pollInterval = null;
-let pollCount    = 0;
-
-function startPolling(reference) {
-  if (pollInterval) clearInterval(pollInterval);
-  pollCount = 0;
-  pollInterval = setInterval(async () => {
-    pollCount++;
-    if (pollCount > 90) {
-      clearInterval(pollInterval);
-      return;
-    }
-    try {
-      const res = await fetch(STAGE2_WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: 'charge.success',
-          data: {
-            reference: reference,
-            status: 'success',
-            amount: currentPrice * 100,
-            customer: { email: '' }
-          }
-        })
-      });
-      if (!res.ok) return;
-      const data = await res.json();
-      if (data && data.status === 'success' && data.fullProject) {
-        clearInterval(pollInterval);
-        deliverFullProject(data);
-      }
-    } catch(e) {
-      // Silently retry
-    }
-  }, 10000);
-}
+// Polling removed — fetchFullProject() handles delivery directly via Paystack callback
 
 // ── FETCH FULL PROJECT AFTER PAYMENT ──
 // FIX: Read ONLY from localStorage — sessionStorage is wiped on Paystack redirect.
@@ -967,10 +930,7 @@ function init() {
     document.getElementById('docContent').innerHTML = renderDoc(previewText);
   }
 
-  const pendingRef = localStorage.getItem('projectcog_pending_ref');
-  if (pendingRef && pendingRef === currentRef) {
-    startPolling(pendingRef);
-  }
+  // No polling needed — Paystack inline callback handles delivery directly
 }
 
 init();
