@@ -924,7 +924,17 @@ function init() {
   document.getElementById('metaName').textContent = payload.studentName || data.studentName || '—';
   document.getElementById('metaType').textContent = TYPE_LABELS[currentType] || '—';
   document.getElementById('metaInst').textContent = payload.institutionName || '—';
-  document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
+  // Show referral discount badge and discounted price if applied
+  if (payload.discountApplied) {
+    const discountAmt = payload.discountAmount || 500;
+    currentPrice = currentPrice - discountAmt;
+    document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
+    const badge = document.getElementById('discBadge');
+    badge.textContent = 'Referral discount of ₦' + discountAmt.toLocaleString() + ' applied.';
+    badge.classList.add('show');
+  } else {
+    document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
+  }
 
   updateFeats(currentType);
   if (previewText) {
