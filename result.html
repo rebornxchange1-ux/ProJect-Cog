@@ -926,8 +926,9 @@ function init() {
   document.getElementById('metaInst').textContent = payload.institutionName || '—';
   // Show referral discount badge and discounted price if applied
   if (payload.discountApplied) {
-    const discountAmt = payload.discountAmount || 500;
-    currentPrice = currentPrice - discountAmt;
+    const discountAmt = parseInt(payload.discountAmount) || 500;
+    const basePrice = PRICES[currentType] || 10500;
+    currentPrice = basePrice - discountAmt;
     document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
     const badge = document.getElementById('discBadge');
     badge.textContent = 'Referral discount of ₦' + discountAmt.toLocaleString() + ' applied.';
