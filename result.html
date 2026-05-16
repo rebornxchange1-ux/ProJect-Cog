@@ -659,8 +659,11 @@ function goToPayment(e) {
   localStorage.setItem('projectcog_pending_type', currentType);
   localStorage.setItem('projectcog_student_payload', payload || '{}');
 
-  const discount = studentData.discountApplied ? (studentData.discountAmount || 500) : 0;
-  const amount = ((currentPrice || PRICES[currentType] || 10500) - discount) * 100;
+  // Always use PRICES as base — currentPrice may have been modified by discount display
+  const basePrice = PRICES[currentType] || 10500;
+  const discountAmt = studentData.discountApplied ? (parseInt(studentData.discountAmount) || 500) : 0;
+  const finalPrice = basePrice - discountAmt;
+  const amount = finalPrice * 100;
 
   const handler = PaystackPop.setup({
     key: 'pk_live_912073a14e3419374cff54322f1507e6f3a83c2c',
