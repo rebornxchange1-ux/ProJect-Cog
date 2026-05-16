@@ -411,7 +411,7 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
         <!-- FREE PREVIEW -->
         <div class="dl-block-label free"><i class="fas fa-check-circle"></i> Download Free Preview</div>
         <div class="dl-btns">
-          <button class="dl-btn dl-word" onclick="dlPreviewWord()"><i class="fas fa-file-word"></i> Word</button>
+          <button class="dl-btn dl-word" onclick="dlPreviewWord()"><i class="fas fa-download"></i> Download Preview</button>
         </div>
         <div class="dl-free-note">Preliminary pages and Chapter 1 — no payment needed</div>
 
@@ -419,7 +419,7 @@ footer strong { color: var(--indigo-l); font-weight: 600; }
         <div class="dl-full-block" id="fullDlBlock">
           <div class="dl-block-label locked" id="fullDlLabel"><i class="fas fa-lock"></i> Full Project Download</div>
           <div class="dl-btns" id="fullDlBtns">
-            <button class="dl-btn-locked" id="fullWordBtn" disabled><i class="fas fa-file-word"></i> Word</button>
+            <button class="dl-btn-locked" id="fullWordBtn" disabled><i class="fas fa-download"></i> Download Project</button>
           </div>
           <div class="dl-locked-note" id="fullDlNote"><i class="fas fa-lock"></i> Available after payment</div>
         </div>
@@ -685,9 +685,8 @@ function goToPayment(e) {
 
 // Polling removed — fetchFullProject() handles delivery directly via Paystack callback
 
-// ── FETCH FULL PROJECT AFTER PAYMENT ──
-// FIX: Read ONLY from localStorage — sessionStorage is wiped on Paystack redirect.
-// FIX: Use the saved PCG reference, not a new one.
+// ── FETCH FULL PROJECT AFTER PAYMENT — WITH RETRY QUEUE ──
+// Tries up to 5 times before showing error. Student sees friendly messages throughout.
 async function fetchFullProject(reference) {
   document.body.innerHTML = `
     <div style="font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc;text-align:center;padding:40px 20px">
@@ -695,64 +694,116 @@ async function fetchFullProject(reference) {
       <h2 style="font-family:'Instrument Serif',serif;font-size:28px;color:#0F1628;margin-bottom:12px">Loading Your Full Project</h2>
       <p style="color:#64748b;font-size:15px;max-width:420px;line-height:1.7">Please wait while we load your complete academic project. This may take a moment.</p>
       <div id="fetchStatus" style="margin-top:24px;color:#4B35C8;font-weight:600;font-size:14px">Connecting to server...</div>
+      <div id="retryStatus" style="margin-top:8px;color:#94a3b8;font-size:13px"></div>
+      <div style="margin-top:24px;background:linear-gradient(135deg,#fff8e1,#fffde7);border:2px solid #F5C842;border-radius:14px;padding:16px 18px;max-width:420px;text-align:left;display:flex;align-items:flex-start;gap:12px;">
+        <div style="font-size:24px;flex-shrink:0">⚠️</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#0F1628;margin-bottom:4px">Abeg, no leave this page o! 🙏</div>
+          <div style="font-size:13px;color:#64748b;line-height:1.6">
+            <strong style="color:#0F1628">Do not close this page, press back button, or allow your phone to sleep.</strong>
+            Your full project is being written right now — all 5 chapters. If you leave, you go need pay again.
+            Just keep this page open — e go ready in 1 to 3 minutes! 💪
+          </div>
+        </div>
+      </div>
     </div>`;
 
-  try {
-    // FIX: Only use localStorage — sessionStorage dies after Paystack redirect
-    const studentDataStr = localStorage.getItem('projectcog_student_payload')
-                        || localStorage.getItem('projectcog_payload');
-    const studentData = studentDataStr ? JSON.parse(studentDataStr) : {};
+  // Only use localStorage — sessionStorage dies after Paystack redirect
+  const studentDataStr = localStorage.getItem('projectcog_student_payload')
+                      || localStorage.getItem('projectcog_payload');
+  const studentData = studentDataStr ? JSON.parse(studentDataStr) : {};
 
-    // FIX: Use the saved PCG reference as priority — this is what Stage 1 created
-    const pcgRef = localStorage.getItem('projectcog_pending_ref')
-                || studentData.reference
-                || reference;
+  // Use the saved PCG reference as priority
+  const pcgRef = localStorage.getItem('projectcog_pending_ref')
+              || studentData.reference
+              || reference;
 
-    document.getElementById('fetchStatus').textContent = 'Retrieving your project...';
+  const requestBody = {
+    reference: pcgRef,
+    paystackReference: reference,
+    studentName: studentData.studentName || '',
+    matricNumber: studentData.matricNumber || '',
+    institutionType: studentData.institutionType || '',
+    institutionName: studentData.institutionName || '',
+    department: studentData.department || '',
+    programme: studentData.programme || '',
+    studentLevel: studentData.studentLevel || '',
+    projectType: studentData.projectType || '',
+    projectTopic: studentData.projectTopic || '',
+    supervisorName: studentData.supervisorName || '',
+    academicYear: studentData.academicYear || '',
+    faculty: studentData.faculty || (studentData.finalYearProject?.faculty) || '',
+    courseTitle: studentData.courseTitle || (studentData.seminar?.courseTitle) || (studentData.termPaper?.courseTitle) || '',
+    courseCode: studentData.courseCode || (studentData.seminar?.courseCode) || (studentData.termPaper?.courseCode) || '',
+    lecturerName: studentData.lecturerName || (studentData.seminar?.lecturerName) || (studentData.termPaper?.lecturerName) || '',
+    organizationName: studentData.organizationName || (studentData.siwes?.organizationName) || '',
+    duration: studentData.duration || (studentData.siwes?.duration) || '',
+    caseStudy: studentData.caseStudy || (studentData.finalYearProject?.caseStudy) || '',
+    referralCode: studentData.referralCode || ''
+  };
 
-    const res = await fetch(STAGE2_WEBHOOK, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        reference: pcgRef,
-        paystackReference: reference,
-        studentName: studentData.studentName || '',
-        matricNumber: studentData.matricNumber || '',
-        institutionType: studentData.institutionType || '',
-        institutionName: studentData.institutionName || '',
-        department: studentData.department || '',
-        programme: studentData.programme || '',
-        studentLevel: studentData.studentLevel || '',
-        projectType: studentData.projectType || '',
-        projectTopic: studentData.projectTopic || '',
-        supervisorName: studentData.supervisorName || '',
-        academicYear: studentData.academicYear || '',
-        faculty: studentData.faculty || (studentData.finalYearProject?.faculty) || '',
-        courseTitle: studentData.courseTitle || (studentData.seminar?.courseTitle) || (studentData.termPaper?.courseTitle) || '',
-        courseCode: studentData.courseCode || (studentData.seminar?.courseCode) || (studentData.termPaper?.courseCode) || '',
-        lecturerName: studentData.lecturerName || (studentData.seminar?.lecturerName) || (studentData.termPaper?.lecturerName) || '',
-        organizationName: studentData.organizationName || (studentData.siwes?.organizationName) || '',
-        duration: studentData.duration || (studentData.siwes?.duration) || '',
-        caseStudy: studentData.caseStudy || (studentData.finalYearProject?.caseStudy) || '',
-        referralCode: studentData.referralCode || ''
-      })
-    });
+  // Friendly messages shown to student on each attempt
+  const attemptMessages = [
+    'Generating your full project...',
+    'Still working, please wait...',
+    'Almost there, just a moment more...',
+    'Taking a little longer than usual, still working...',
+    'Final attempt, e go ready now...'
+  ];
 
-    const data = await res.json();
+  const maxAttempts = 5;
+  const retryDelay = 15000; // 15 seconds between retries
 
-    if (data && data.status === 'success' && data.fullProject) {
-      localStorage.setItem('projectcog_full_project', data.fullProject);
-      localStorage.setItem('projectcog_paid', 'true');
-      localStorage.setItem('projectcog_fetched_ref', pcgRef);
-      localStorage.setItem('projectcog_paid_type', data.projectType || '');
-      localStorage.setItem('projectcog_paid_name', data.studentName || '');
-      // Reload page so full UI renders properly
-      window.location.href = window.location.pathname;
-    } else {
-      document.getElementById('fetchStatus').textContent = 'Could not load project. Please contact support with reference: ' + pcgRef;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const statusEl = document.getElementById('fetchStatus');
+      const retryEl = document.getElementById('retryStatus');
+
+      if (statusEl) statusEl.textContent = attemptMessages[attempt - 1];
+      if (retryEl) retryEl.textContent = attempt > 1 ? 'Attempt ' + attempt + ' of ' + maxAttempts : '';
+
+      const res = await fetch(STAGE2_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!res.ok) throw new Error('Server error: ' + res.status);
+
+      const data = await res.json();
+
+      if (data && data.status === 'success' && data.fullProject) {
+        // Success — save and reload
+        localStorage.setItem('projectcog_full_project', data.fullProject);
+        localStorage.setItem('projectcog_paid', 'true');
+        localStorage.setItem('projectcog_fetched_ref', pcgRef);
+        localStorage.setItem('projectcog_paid_type', data.projectType || '');
+        localStorage.setItem('projectcog_paid_name', data.studentName || '');
+        window.location.href = window.location.pathname;
+        return;
+      }
+
+      // Got response but no fullProject — retry
+      throw new Error('Empty project received');
+
+    } catch(e) {
+      if (attempt < maxAttempts) {
+        // Wait before retrying
+        const retryEl = document.getElementById('retryStatus');
+        if (retryEl) retryEl.textContent = 'Retrying in 15 seconds... (Attempt ' + attempt + ' of ' + maxAttempts + ')';
+        await new Promise(r => setTimeout(r, retryDelay));
+      } else {
+        // All attempts failed — show support message
+        const statusEl = document.getElementById('fetchStatus');
+        if (statusEl) statusEl.innerHTML =
+          'We tried 5 times but could not load your project.<br><br>' +
+          '<strong style="color:#0F1628">Your payment was received.</strong> Please contact support with your reference:<br><br>' +
+          '<strong style="color:#4B35C8;font-size:16px">' + pcgRef + '</strong><br><br>' +
+          '<a href="https://wa.me/2348111689782?text=Hello, I paid for ProjectCog but my project did not load. My reference is ' + pcgRef + '" ' +
+          'style="display:inline-block;margin-top:12px;padding:12px 24px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-weight:700">' +
+          '📱 WhatsApp Support</a>';
+      }
     }
-  } catch(e) {
-    document.getElementById('fetchStatus').textContent = 'Connection error. Please contact support with reference: ' + (localStorage.getItem('projectcog_pending_ref') || reference);
   }
 }
 
@@ -786,7 +837,7 @@ function deliverFullProject(data) {
   const wordBtn = document.getElementById('fullWordBtn');
   wordBtn.className = 'dl-btn dl-word';
   wordBtn.disabled  = false;
-  wordBtn.innerHTML = '<i class="fas fa-file-word"></i> Word';
+  wordBtn.innerHTML = '<i class="fas fa-download"></i> Download Project';
   wordBtn.onclick   = dlFullWord;
 
   if (currentType === 'final_year_project') {
