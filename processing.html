@@ -128,7 +128,7 @@ body::after {
   border-radius:14px;
   padding:22px;
   text-align:left;
-  margin-bottom:28px;
+  margin-bottom:20px;
 }
 .s-item {
   display:flex;
@@ -171,8 +171,42 @@ body::after {
   transition:width 1.5s ease;
   width:0%;
 }
-.prog-pct { font-size:13px; color:var(--gray); text-align:right; margin-bottom:28px; }
+.prog-pct { font-size:13px; color:var(--gray); text-align:right; margin-bottom:16px; }
 .prog-pct span { color:var(--indigo); font-weight:700; }
+
+/* WARNING BOX — don't sleep phone */
+.warning-box {
+  background:linear-gradient(135deg, #fff8e1, #fffde7);
+  border:2px solid #F5C842;
+  border-radius:14px;
+  padding:16px 18px;
+  margin-bottom:16px;
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  text-align:left;
+}
+.warning-box .warn-icon {
+  font-size:24px;
+  flex-shrink:0;
+  margin-top:2px;
+}
+.warning-box .warn-title {
+  font-size:14px;
+  font-weight:700;
+  color:var(--navy);
+  margin-bottom:4px;
+}
+.warning-box .warn-body {
+  font-size:13px;
+  color:#64748b;
+  line-height:1.6;
+}
+.warning-box .warn-body strong {
+  color:var(--navy);
+  font-weight:700;
+}
+
 .note { font-size:13px; color:var(--gray); line-height:1.65; }
 .note i { color:var(--indigo); }
 
@@ -231,6 +265,20 @@ body::after {
 
   <div class="prog-wrap"><div class="prog-fill" id="pFill"></div></div>
   <div class="prog-pct">Progress: <span id="pPct">0%</span></div>
+
+  <!-- WARNING: Don't sleep phone or leave page -->
+  <div class="warning-box">
+    <div class="warn-icon">⚠️</div>
+    <div>
+      <div class="warn-title">Abeg, no leave this page o! 🙏</div>
+      <div class="warn-body">
+        <strong>Do not close this page, press back button, or allow your phone to sleep.</strong>
+        Your project is being generated right now. If you leave, you go need start again from beginning.
+        Just keep this page open — e go ready in less than 60 seconds! 💪
+      </div>
+    </div>
+  </div>
+
   <p class="note"><i class="fas fa-clock"></i> This usually takes 30 to 60 seconds. Please do not close this page.</p>
 
   <div class="err-box" id="errBox">
@@ -252,6 +300,19 @@ function si(id,state){
 function sp(p){document.getElementById('pFill').style.width=p+'%';document.getElementById('pPct').textContent=p+'%';}
 function ss(t){document.getElementById('statusTxt').textContent=t;}
 function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// Prevent accidental back navigation
+history.pushState(null, null, location.href);
+window.addEventListener('popstate', function() {
+  history.pushState(null, null, location.href);
+});
+
+// Warn if student tries to close or leave page
+window.addEventListener('beforeunload', function(e) {
+  e.preventDefault();
+  e.returnValue = 'Your project is still generating. Are you sure you want to leave?';
+  return e.returnValue;
+});
 
 async function run(){
   const ps=localStorage.getItem('projectcog_payload');
@@ -284,6 +345,10 @@ async function run(){
 
     if(!data.generatedProject) throw new Error('No content received');
 
+    // Remove beforeunload warning before redirecting
+    window.removeEventListener('beforeunload', function(){});
+    window.onbeforeunload = null;
+
     si('s5','done');sp(100);ss('Your project is ready! Redirecting...');
     localStorage.setItem('projectcog_result',JSON.stringify(data));
     await delay(1200);
@@ -294,6 +359,8 @@ async function run(){
     ss('Something went wrong. Please try again.');
     document.getElementById('errBox').classList.add('show');
     sp(0);
+    // Remove warning when error shows — student needs to go back
+    window.onbeforeunload = null;
   }
 }
 
