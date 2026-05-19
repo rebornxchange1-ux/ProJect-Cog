@@ -301,18 +301,7 @@ function sp(p){document.getElementById('pFill').style.width=p+'%';document.getEl
 function ss(t){document.getElementById('statusTxt').textContent=t;}
 function delay(ms){return new Promise(r=>setTimeout(r,ms));}
 
-// Prevent accidental back navigation
-history.pushState(null, null, location.href);
-window.addEventListener('popstate', function() {
-  history.pushState(null, null, location.href);
-});
-
-// Warn if student tries to close or leave page
-window.addEventListener('beforeunload', function(e) {
-  e.preventDefault();
-  e.returnValue = 'Your project is still generating. Are you sure you want to leave?';
-  return e.returnValue;
-});
+// Navigation warnings removed — they caused issues on some devices
 
 async function run(){
   const ps=localStorage.getItem('projectcog_payload');
@@ -345,10 +334,6 @@ async function run(){
 
     if(!data.generatedProject) throw new Error('No content received');
 
-    // Remove beforeunload warning before redirecting
-    window.removeEventListener('beforeunload', function(){});
-    window.onbeforeunload = null;
-
     si('s5','done');sp(100);ss('Your project is ready! Redirecting...');
     localStorage.setItem('projectcog_result',JSON.stringify(data));
     await delay(1200);
@@ -359,8 +344,7 @@ async function run(){
     ss('Something went wrong. Please try again.');
     document.getElementById('errBox').classList.add('show');
     sp(0);
-    // Remove warning when error shows — student needs to go back
-    window.onbeforeunload = null;
+
   }
 }
 
