@@ -1,3 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Project — ProjectCog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+:root {
+  --navy:      #0F1628;
+  --indigo:    #4B35C8;
+  --indigo-d:  #3826A8;
+  --indigo-l:  #6B57E0;
+  --yellow:    #F5C842;
+  --white:     #ffffff;
+  --off:       #F6F7FD;
+  --gray:      #64748b;
+  --gray-2:    #94a3b8;
+  --border:    #e2e8f0;
+  --green:     #10b981;
+  --bg-page:   #ffffff;
+  --shadow:    0 8px 40px rgba(15,22,40,0.13);
+  --shadow-lg: 0 20px 72px rgba(15,22,40,0.18);
+  --shadow-ind:0 8px 28px rgba(75,53,200,.28);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #ffffff;
+  color: var(--navy);
+}
+
+nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 5%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  box-shadow: 0 1px 0 var(--border);
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-logo-text { font-family: 'Instrument Serif', serif; font-size: 22px; font-weight: 400; color: var(--navy); }
+.nav-logo-text span { color: var(--indigo); }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.nav-link { font-size: 13.5px; color: var(--gray); text-decoration: none; font-weight: 500; transition: color .2s; }
+.nav-link:hover { color: var(--navy); }
+.nav-cta { background: var(--indigo); color: var(--white); font-size: 13.5px; font-weight: 700; padding: 9px 20px; border-radius: 8px; text-decoration: none; transition: background .2s; box-shadow: var(--shadow-ind); }
+.nav-cta:hover { background: var(--indigo-d); }
+
+.success-bar {
+  background: linear-gradient(90deg, #059669, #10b981);
+  color: #fff;
+  padding: 13px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.success-bar i { font-size: 17px; }
+
+/* FULL PROJECT UNLOCKED BANNER */
+.unlocked-bar {
+  background: linear-gradient(90deg, #4B35C8, #6B57E0);
+  color: #fff;
+  padding: 13px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  display: none;
+}
+.unlocked-bar i { font-size: 17px; }
+
+/* LOADING OVERLAY */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15,22,40,0.85);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+.loading-overlay.show { display: flex; }
+.loading-spinner {
+  width: 60px; height: 60px;
+  border: 4px solid rgba(255,255,255,0.1);
+  border-top: 4px solid var(--indigo-l);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: #fff; font-size: 16px; font-weight: 600; text-align: center; }
+.loading-sub { color: rgba(255,255,255,0.6); font-size: 13px; text-align: center; max-width: 280px; }
+
+/* DEFENSE CHATBOT NOTICE */
+.defense-notice {
+  display: none;
+  background: linear-gradient(135deg, #0F1628, #1a2340);
+  border: 1px solid rgba(75,53,200,0.3);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.defense-notice::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, #4B35C8, #F5C842);
+}
+.defense-notice h3 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 10px;
+}
+.defense-notice p {
+  color: rgba(255,255,255,0.65);
+  font-size: 13.5px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.defense-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #F5C842, #f0b429);
+  color: #0F1628;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 24px rgba(245,200,66,0.3);
+}
+.defense-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(245,200,66,0.4); }
+
+.result-wrap {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 22px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 5% 60px;
+}
+
+.doc-header {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  border: 1.5px solid var(--border);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.doc-title { font-family: 'Instrument Serif', serif; font-size: 19px; font-weight: 400; color: var(--navy); margin-bottom: 8px; }
+.doc-metas { display: flex; gap: 14px; flex-wrap: wrap; }
+.dm { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray); }
+.dm i { color: var(--indigo); font-size: 12px; }
+.free-tag { background: rgba(75,53,200,.09); color: var(--indigo); border: 1px solid rgba(75,53,200,.18); padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; }
+.paid-tag { background: rgba(16,185,129,.09); color: var(--green); border: 1px solid rgba(16,185,129,.18); padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; display: none; }
+
+.doc-box { background: var(--white); border-radius: 16px; box-shadow: var(--shadow); border: 1.5px solid var(--border); overflow: hidden; }
+.doc-inner {
+  padding: 40px;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 15px;
+  line-height: 1.9;
+  color: #111;
+  max-height: 640px;
+  overflow-y: auto;
+}
+.doc-inner::-webkit-scrollbar { width: 5px; }
+.doc-inner::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+.doc-inner h1, .doc-inner h2, .doc-inner h3 { font-family: 'Times New Roman', serif; text-align: center; text-transform: uppercase; margin: 18px 0 12px; letter-spacing: .03em; }
+.doc-inner h1 { font-size: 15px; font-weight: 700; }
+.doc-inner h2 { font-size: 14.5px; font-weight: 700; }
+.doc-inner h3 { font-size: 14px; font-weight: 600; text-align: left; }
+.doc-inner p  { margin-bottom: 14px; text-align: justify; }
+.doc-inner strong { font-weight: 700; }
+.doc-inner hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+
+/* Full project — no height limit */
+.doc-inner.full-mode { max-height: none; }
+
+.lock-fade {
+  position: relative;
+  margin-top: -100px;
+  padding-top: 100px;
+  background: linear-gradient(to bottom, transparent, rgba(246,247,253,.97) 35%, var(--off) 100%);
+  border-radius: 0 0 14px 14px;
+  padding-bottom: 36px;
+  text-align: center;
+}
+.lock-icon-wrap { width: 60px; height: 60px; background: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; color: var(--yellow); font-size: 22px; }
+.lock-title { font-family: 'Instrument Serif', serif; font-size: 22px; font-weight: 400; color: var(--navy); margin-bottom: 8px; }
+.lock-sub { color: var(--gray); font-size: 13.5px; margin-bottom: 18px; max-width: 360px; margin-left: auto; margin-right: auto; line-height: 1.65; }
+.lock-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 24px; }
+.chip { background: rgba(75,53,200,.07); border: 1px solid rgba(75,53,200,.15); color: var(--indigo); padding: 5px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+/* SIDEBAR */
+.pay-card { background: var(--white); border-radius: 16px; padding: 24px; border: 1.5px solid var(--border); box-shadow: var(--shadow); position: sticky; top: 86px; }
+.pay-card-head { text-align: center; padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+.pay-card-head h3 { font-family: 'Instrument Serif', serif; font-size: 20px; font-weight: 400; color: var(--navy); margin-bottom: 10px; }
+.pay-amount { font-family: 'Instrument Serif', serif; font-size: 48px; font-weight: 400; color: var(--indigo); line-height: 1; margin-bottom: 5px; }
+.pay-amount sup { font-size: 20px; vertical-align: top; margin-top: 10px; display: inline-block; }
+.pay-note-sm { font-size: 12px; color: var(--gray-2); }
+
+.disc-badge { background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.25); color: #34d399; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 18px; display: none; }
+.disc-badge.show { display: block; }
+
+.pay-feats { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px; }
+.pay-feats li { display: flex; align-items: flex-start; gap: 9px; font-size: 13px; color: var(--gray); line-height: 1.5; }
+.pay-feats li i { color: var(--green); font-size: 13px; margin-top: 2px; flex-shrink: 0; }
+
+.pay-btn { width: 100%; padding: 14px; background: var(--indigo); color: var(--white); border: none; border-radius: 11px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px; transition: background .2s, transform .2s, box-shadow .2s; font-family: 'DM Sans', sans-serif; box-shadow: 0 8px 28px rgba(75,53,200,.35); margin-bottom: 10px; text-decoration: none; }
+.pay-btn:hover { background: var(--indigo-d); transform: translateY(-2px); box-shadow: 0 14px 40px rgba(75,53,200,.45); }
+
+.sec-note { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: var(--gray-2); }
+.sec-note i { color: var(--green); }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+.ref-label { font-size: 12px; color: var(--gray); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.ref-row { display: flex; gap: 8px; }
+.ref-row input { flex: 1; padding: 10px 12px; background: var(--off); border: 1.5px solid var(--border); border-radius: 8px; color: var(--navy); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; }
+.ref-row input::placeholder { color: var(--gray-2); }
+.ref-row input:focus { border-color: var(--indigo); }
+.ref-apply { padding: 10px 14px; background: rgba(75,53,200,.08); border: 1.5px solid rgba(75,53,200,.2); color: var(--indigo); border-radius: 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; transition: background .2s; }
+.ref-apply:hover { background: var(--indigo); color: #fff; }
+
+.dl-section { margin-top: 14px; }
+.dl-btns { display: flex; gap: 8px; }
+.dl-btn { flex: 1; padding: 10px 8px; border-radius: 9px; font-size: 12.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; border: none; transition: background .2s; font-family: 'DM Sans', sans-serif; }
+.dl-pdf  { background: rgba(220,38,38,.14); color: #f87171; border: 1px solid rgba(220,38,38,.2); }
+.dl-pdf:hover  { background: rgba(220,38,38,.24); }
+.dl-word { background: rgba(37,99,235,.14); color: #93c5fd; border: 1px solid rgba(37,99,235,.2); }
+.dl-word:hover { background: rgba(37,99,235,.24); }
+
+.dl-block-label { font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+.dl-block-label.free   { color: var(--green); }
+.dl-block-label.locked { color: var(--gray-2); }
+.dl-block-label.unlocked { color: var(--indigo); }
+.dl-free-note { font-size: 11px; color: var(--gray-2); margin-top: 5px; }
+
+.dl-full-block { margin-top: 10px; background: var(--off); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
+.dl-full-block.paid { background: rgba(75,53,200,.04); border-color: rgba(75,53,200,.2); }
+
+.dl-btn-locked { flex: 1; padding: 10px 8px; border-radius: 9px; font-size: 12.5px; font-weight: 700; cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 6px; border: none; font-family: 'DM Sans', sans-serif; background: var(--border); color: var(--gray-2); opacity: .7; }
+.dl-locked-note { font-size: 11px; color: var(--gray-2); text-align: center; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+.share-area { margin-top: 14px; text-align: center; }
+.share-area p { font-size: 12px; color: var(--gray-2); margin-bottom: 9px; }
+.share-row { display: flex; gap: 8px; justify-content: center; }
+.s-btn { padding: 9px 14px; border-radius: 9px; font-size: 12.5px; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px; transition: transform .2s; font-family: 'DM Sans', sans-serif; }
+.s-wa   { background: rgba(37,211,102,.1); color: #059669; border: 1px solid rgba(37,211,102,.2); }
+.s-copy { background: var(--off); color: var(--gray); border: 1px solid var(--border); }
+.s-btn:hover { transform: translateY(-2px); }
+
+.new-proj { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--off); color: var(--navy); padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; margin-top: 12px; border: 1.5px solid var(--border); transition: border-color .2s, color .2s; }
+.new-proj:hover { border-color: var(--indigo); color: var(--indigo); }
+
+footer { background: var(--navy); padding: 20px 5%; text-align: center; color: rgba(255,255,255,.3); font-size: 13px; }
+footer a { color: rgba(255,255,255,.3); text-decoration: none; transition: color .2s; }
+footer a:hover { color: var(--indigo-l); }
+footer strong { color: var(--indigo-l); font-weight: 600; }
+
+@media (max-width: 900px) {
+  .result-wrap { grid-template-columns: 1fr; }
+  .pay-card { position: static; }
+  .doc-inner { padding: 22px; }
+  .nav-right .nav-link { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Generating Your Full Project...</div>
+  <div class="loading-sub">Please wait. Our AI is writing all 5 chapters, references, and appendices for you.</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-text">Project<span>Cog</span></span>
+  </a>
+  <div class="nav-right">
+    <a href="https://wa.me/2348111689782" class="nav-link" target="_blank">Need help?</a>
+    <a href="generate.html" class="nav-cta">New Project</a>
+  </div>
+</nav>
+
+<!-- BANNERS -->
+<div class="success-bar" id="previewBanner">
+  <i class="fas fa-check-circle"></i>
+  Your free preview is ready. Preliminary pages and complete Chapter 1 generated successfully.
+</div>
+<div class="unlocked-bar" id="unlockedBanner">
+  <i class="fas fa-unlock"></i>
+  🎉 Payment confirmed! Your full project has been generated and is ready to download.
+</div>
+
+<!-- MAIN -->
+<div style="background:#ffffff;padding:28px 0 60px">
+<div class="result-wrap">
+
+  <!-- LEFT: DOCUMENT -->
+  <div>
+
+    <!-- DEFENSE CHATBOT NOTICE (Final Year Project only, shown after payment) -->
+    <div class="defense-notice" id="defenseNotice">
+      <h3>🎓 Prepare for Your Project Defense</h3>
+      <p>
+        Congratulations on receiving your complete project! Your next step is to prepare confidently for your defense panel.
+        Our AI Defense Coach — trained with 25 years of Nigerian university supervision and examination experience — is ready to conduct a full live mock defense session with you right now.
+      </p>
+      <button class="defense-btn" onclick="startDefense()">
+        <i class="fas fa-comments"></i> Start My Mock Defense
+      </button>
+    </div>
+
+    <div class="doc-header">
+      <div>
+        <div class="doc-title" id="docTitle">Your Academic Project Preview</div>
+        <div class="doc-metas">
+          <span class="dm"><i class="fas fa-user"></i><span id="metaName">—</span></span>
+          <span class="dm"><i class="fas fa-university"></i><span id="metaInst">—</span></span>
+          <span class="dm"><i class="fas fa-bookmark"></i><span id="metaType">—</span></span>
+        </div>
+      </div>
+      <span class="free-tag" id="freeTag">FREE PREVIEW</span>
+      <span class="paid-tag" id="paidTag">✅ FULL PROJECT</span>
+    </div>
+
+    <div class="doc-box">
+      <div class="doc-inner" id="docContent">
+        <p style="text-align:center;color:#9ca3af;padding:40px 0">Loading your project...</p>
+      </div>
+
+      <!-- Lock overlay — hidden after payment -->
+      <div class="lock-fade" id="lockFade">
+        <a class="pay-btn" id="lockPayBtn" href="#" style="max-width:340px;margin:0 auto;font-size:16px;padding:16px 32px" onclick="goToPayment(event)">
+          <i class="fas fa-unlock"></i> Pay to Unlock Full Project
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: SIDEBAR -->
+  <div>
+    <div class="pay-card">
+      <div class="pay-card-head">
+        <h3 id="cardTitle">Unlock Full Project</h3>
+        <div class="pay-amount" id="payAmt"><sup>₦</sup>—</div>
+        <div class="pay-note-sm">One-time payment. No subscription.</div>
+      </div>
+
+      <div class="disc-badge" id="discBadge">Referral discount of ₦500 applied.</div>
+
+      <ul class="pay-feats" id="payFeats">
+        <li><i class="fas fa-check-circle"></i> Chapter 2: Literature Review</li>
+        <li><i class="fas fa-check-circle"></i> Chapter 3: Research Methodology</li>
+        <li><i class="fas fa-check-circle"></i> Chapter 4: Data Presentation and Analysis</li>
+        <li><i class="fas fa-check-circle"></i> Chapter 5: Summary and Recommendations</li>
+        <li><i class="fas fa-check-circle"></i> Full References (APA 7th, 20+ sources)</li>
+        <li><i class="fas fa-check-circle"></i> Defense Questions with Model Answers</li>
+      </ul>
+
+      <a href="#" class="pay-btn" id="mainPayBtn" onclick="goToPayment(event)">
+        <i class="fas fa-lock-open"></i> Pay and Unlock Now
+      </a>
+      <div class="sec-note"><i class="fas fa-shield-alt"></i> Secured by Paystack. Safe and instant.</div>
+
+      <hr class="divider">
+
+      <!-- DOWNLOAD -->
+      <div class="dl-section">
+
+        <!-- FREE PREVIEW -->
+        <div class="dl-block-label free"><i class="fas fa-check-circle"></i> Download Free Preview</div>
+        <div class="dl-btns">
+          <button class="dl-btn dl-word" onclick="dlPreviewWord()"><i class="fas fa-download"></i> Download Preview</button>
+        </div>
+        <div class="dl-free-note">Preliminary pages and Chapter 1 — no payment needed</div>
+
+        <!-- FULL PROJECT -->
+        <div class="dl-full-block" id="fullDlBlock">
+          <div class="dl-block-label locked" id="fullDlLabel"><i class="fas fa-lock"></i> Full Project Download</div>
+          <div class="dl-btns" id="fullDlBtns">
+            <button class="dl-btn-locked" id="fullWordBtn" disabled><i class="fas fa-download"></i> Download Project</button>
+          </div>
+          <div class="dl-locked-note" id="fullDlNote"><i class="fas fa-lock"></i> Available after payment</div>
+        </div>
+
+      </div>
+
+      <hr class="divider">
+
+      <!-- SHARE -->
+      <div class="share-area">
+        <p>Share and earn referral rewards</p>
+        <div class="share-row">
+          <button class="s-btn s-wa" onclick="shareWA()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+          <button class="s-btn s-copy" onclick="copyLink()"><i class="fas fa-link"></i> Copy Link</button>
+        </div>
+      </div>
+
+      <a href="generate.html" class="new-proj"><i class="fas fa-plus"></i> Generate Another Project</a>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer>
+  <p>
+    &copy; 2026 ProjectCog &nbsp;&middot;&nbsp;
+    <strong>Reborn Tech Global Solutions</strong> &nbsp;&middot;&nbsp;
+    <a href="mailto:reborntechglobalsolutions@gmail.com">reborntechglobalsolutions@gmail.com</a>
+    &nbsp;&middot;&nbsp;
+    <a href="https://wa.me/2348111689782">+234 811 168 9782</a>
+  </p>
+</footer>
+
+<script>
+// ── CONFIGURATION ──
+const STAGE2_WEBHOOK = 'https://n8n.whytejinjaherbal.com.ng/webhook/ProjectCog-Payment';
+
+const PRICES = {
+  final_year_project: 10500,
+  siwes:              4500,
+  seminar:            4500,
+  term_paper:         4500
+};
+const TYPE_LABELS = {
+  final_year_project: 'Final Year Project',
+  siwes:              'SIWES Report',
+  seminar:            'Seminar Paper',
+  term_paper:         'Term Paper'
+};
+const FEATS = {
+  final_year_project: [
+    'Chapter 2: Literature Review',
+    'Chapter 3: Research Methodology',
+    'Chapter 4: Data Presentation and Analysis',
+    'Chapter 5: Summary, Conclusion and Recommendations',
+    'Full References (APA 7th, 20+ sources)',
+    'Appendices and Research Instruments',
+    'AI Mock Defense Chatbot (15 Live Questions)'
+  ],
+  siwes: [
+    'Chapter 2: Industrial Training Activities (Weekly Log)',
+    'Chapter 3: Skills and Competencies Acquired',
+    'Chapter 4: Challenges Faced and Solutions',
+    'Chapter 5: Conclusion and Recommendations',
+    'Full References',
+    '10 SIWES Defense Questions with Model Answers'
+  ],
+  seminar: [
+    'Full Body Sections with Deep Academic Arguments',
+    'Counter-Arguments and Scholarly Debates',
+    'Conclusion and Recommendations',
+    'Full References (APA 7th, 15+ sources)',
+    'Presentation Tips and Likely Questions',
+    'Guide to Scoring an A Grade'
+  ],
+  term_paper: [
+    'Full Analytical Body Sections',
+    'Critical Evaluation and Arguments',
+    'Conclusion and Recommendations',
+    'Full References (10+ sources)',
+    'Course Scoring Guide',
+    'A Grade Tips for This Paper'
+  ]
+};
+
+let currentType   = '';
+let currentPrice  = 0;
+let discApplied   = false;
+let isPaid        = false;
+let previewText   = '';
+let fullText      = '';
+let currentRef    = '';
+
+// ── RENDER ACADEMIC DOCUMENT ──
 function renderDoc(raw) {
   let text = raw
     .replace(/\\n/g, '\n')
@@ -8,8 +525,6 @@ function renderDoc(raw) {
   let html = '';
   let lastRenderedHeading = '';
   let inParagraph = false;
-  let inCoverPage = true;   // true until we hit DECLARATION
-  let inTOC = false;        // true between TABLE OF CONTENTS and next chapter heading
 
   function closeParagraph() {
     if (inParagraph) { html += '</p>'; inParagraph = false; }
@@ -60,44 +575,6 @@ function renderDoc(raw) {
       continue;
     }
 
-    // ── COVER PAGE: everything before DECLARATION gets its own centered line ──
-    if (inCoverPage) {
-      if (/^DECLARATION$/i.test(line)) {
-        inCoverPage = false;
-        // fall through to normal heading handling below
-      } else {
-        closeParagraph();
-        const cleaned = cleanLine(line);
-        if (cleaned) {
-          html += `<p style="font-family:'Times New Roman',serif;font-size:15px;font-weight:700;text-align:center;margin:6px 0;color:#111">${cleaned}</p>`;
-        }
-        continue;
-      }
-    }
-
-    // ── TABLE OF CONTENTS: keep each entry on its own line ──
-    if (/^TABLE OF CONTENTS$/i.test(line)) {
-      closeParagraph();
-      inTOC = true;
-      html += `<p style="font-family:'Times New Roman',serif;font-size:14px;text-align:center;font-weight:700;margin:20px 0 10px;text-transform:uppercase">${cleanLine(line)}</p>`;
-      continue;
-    }
-    if (inTOC) {
-      // TOC ends when we hit the first real chapter/heading line
-      if (/^(CHAPTER ONE|CHAPTER 1|SECTION ONE)/i.test(line)) {
-        inTOC = false;
-        // fall through to normal handling
-      } else {
-        closeParagraph();
-        // Split entries that may be jammed on one line separated by 2+ spaces or known keywords
-        const entries = cleanLine(line).split(/(?=Chapter\s|Section\s|\d+\.\d+\s)/i).map(e => e.trim()).filter(Boolean);
-        entries.forEach(entry => {
-          html += `<p style="font-family:'Times New Roman',serif;font-size:13.5px;margin:4px 0;color:#222">${entry}</p>`;
-        });
-        continue;
-      }
-    }
-
     if (line.startsWith('# ')) {
       closeParagraph();
       html += `<h1 style="font-family:'Times New Roman',serif;font-size:15px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.04em;margin:20px 0 10px;line-height:1.5">${cleanLine(line.slice(2))}</h1>`;
@@ -130,7 +607,7 @@ function renderDoc(raw) {
         if (lastRenderedHeading === stripped) continue;
         lastRenderedHeading = stripped;
       }
-      html += `<p style="font-family:'Times New Roman',serif;font-size:14px;text-align:center;font-weight:700;margin:6px 0;text-transform:uppercase">${cleanLine(line)}</p>`;
+      html += `<p style="font-family:'Times New Roman',serif;font-size:14px;text-align:center;font-weight:600;margin:6px 0;text-transform:uppercase">${cleanLine(line)}</p>`;
       continue;
     }
 
@@ -155,3 +632,374 @@ function renderDoc(raw) {
   closeParagraph();
   return html;
 }
+
+function updateFeats(type) {
+  const list  = document.getElementById('payFeats');
+  const items = FEATS[type] || FEATS.final_year_project;
+  list.innerHTML = items.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('');
+}
+
+// ── PAYMENT ──
+// FIX: Never generate a new reference. Always use currentRef from Stage 1.
+// If currentRef is missing, the student must regenerate — do not proceed.
+function goToPayment(e) {
+  e.preventDefault();
+
+  if (!currentRef) {
+    alert('Session error: your project reference is missing. Please go back to the form and generate your preview again.');
+    return;
+  }
+
+  const ref = currentRef;
+  const payload = localStorage.getItem('projectcog_payload');
+  const studentData = payload ? JSON.parse(payload) : {};
+
+  // Save to localStorage only — sessionStorage is wiped after Paystack redirect
+  localStorage.setItem('projectcog_pending_ref', ref);
+  localStorage.setItem('projectcog_pending_type', currentType);
+  localStorage.setItem('projectcog_student_payload', payload || '{}');
+
+  // Always use PRICES as base — currentPrice may have been modified by discount display
+  const basePrice = PRICES[currentType] || 10500;
+  const discountAmt = studentData.discountApplied ? (parseInt(studentData.discountAmount) || 500) : 0;
+  const finalPrice = basePrice - discountAmt;
+  const amount = finalPrice * 100;
+
+  const handler = PaystackPop.setup({
+    key: 'pk_live_912073a14e3419374cff54322f1507e6f3a83c2c',
+    email: studentData.email || 'student@projectcog.com',
+    amount: amount,
+    currency: 'NGN',
+    ref: ref,
+    metadata: {
+      pcgref: ref,
+      studentName: studentData.studentName || '',
+      projectType: studentData.projectType || ''
+    },
+    callback: function(response) {
+      fetchFullProject(ref);
+    },
+    onClose: function() {
+      alert('Payment cancelled. Click Pay to try again.');
+    }
+  });
+  handler.openIframe();
+}
+
+// Polling removed — fetchFullProject() handles delivery directly via Paystack callback
+
+// ── FETCH FULL PROJECT AFTER PAYMENT — WITH RETRY QUEUE ──
+// Tries up to 5 times before showing error. Student sees friendly messages throughout.
+async function fetchFullProject(reference) {
+  document.body.innerHTML = `
+    <div style="font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc;text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:20px">⚙️</div>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:28px;color:#0F1628;margin-bottom:12px">Loading Your Full Project</h2>
+      <p style="color:#64748b;font-size:15px;max-width:420px;line-height:1.7">Please wait while we load your complete academic project. This may take a moment.</p>
+      <div id="fetchStatus" style="margin-top:24px;color:#4B35C8;font-weight:600;font-size:14px">Connecting to server...</div>
+      <div id="retryStatus" style="margin-top:8px;color:#94a3b8;font-size:13px"></div>
+      <div style="margin-top:24px;background:linear-gradient(135deg,#fff8e1,#fffde7);border:2px solid #F5C842;border-radius:14px;padding:16px 18px;max-width:420px;text-align:left;display:flex;align-items:flex-start;gap:12px;">
+        <div style="font-size:24px;flex-shrink:0">⚠️</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#0F1628;margin-bottom:4px">Abeg, no leave this page o! 🙏</div>
+          <div style="font-size:13px;color:#64748b;line-height:1.6">
+            <strong style="color:#0F1628">Do not close this page, press back button, or allow your phone to sleep.</strong>
+            Your full project is being written right now — all 5 chapters. If you leave, you go need pay again.
+            Just keep this page open — e go ready in 1 to 3 minutes! 💪
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  // Only use localStorage — sessionStorage dies after Paystack redirect
+  const studentDataStr = localStorage.getItem('projectcog_student_payload')
+                      || localStorage.getItem('projectcog_payload');
+  const studentData = studentDataStr ? JSON.parse(studentDataStr) : {};
+
+  // Use the saved PCG reference as priority
+  const pcgRef = localStorage.getItem('projectcog_pending_ref')
+              || studentData.reference
+              || reference;
+
+  const requestBody = {
+    reference: pcgRef,
+    paystackReference: reference,
+    studentName: studentData.studentName || '',
+    matricNumber: studentData.matricNumber || '',
+    institutionType: studentData.institutionType || '',
+    institutionName: studentData.institutionName || '',
+    department: studentData.department || '',
+    programme: studentData.programme || '',
+    studentLevel: studentData.studentLevel || '',
+    projectType: studentData.projectType || '',
+    projectTopic: studentData.projectTopic || '',
+    supervisorName: studentData.supervisorName || '',
+    academicYear: studentData.academicYear || '',
+    faculty: studentData.faculty || (studentData.finalYearProject?.faculty) || '',
+    courseTitle: studentData.courseTitle || (studentData.seminar?.courseTitle) || (studentData.termPaper?.courseTitle) || '',
+    courseCode: studentData.courseCode || (studentData.seminar?.courseCode) || (studentData.termPaper?.courseCode) || '',
+    lecturerName: studentData.lecturerName || (studentData.seminar?.lecturerName) || (studentData.termPaper?.lecturerName) || '',
+    organizationName: studentData.organizationName || (studentData.siwes?.organizationName) || '',
+    duration: studentData.duration || (studentData.siwes?.duration) || '',
+    caseStudy: studentData.caseStudy || (studentData.finalYearProject?.caseStudy) || '',
+    referralCode: studentData.referralCode || ''
+  };
+
+  // Friendly messages shown to student on each attempt
+  const attemptMessages = [
+    'Generating your full project...',
+    'Still working, please wait...',
+    'Almost there, just a moment more...',
+    'Taking a little longer than usual, still working...',
+    'Final attempt, e go ready now...'
+  ];
+
+  const maxAttempts = 5;
+  const retryDelay = 15000; // 15 seconds between retries
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const statusEl = document.getElementById('fetchStatus');
+      const retryEl = document.getElementById('retryStatus');
+
+      if (statusEl) statusEl.textContent = attemptMessages[attempt - 1];
+      if (retryEl) retryEl.textContent = attempt > 1 ? 'Attempt ' + attempt + ' of ' + maxAttempts : '';
+
+      const res = await fetch(STAGE2_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!res.ok) throw new Error('Server error: ' + res.status);
+
+      const data = await res.json();
+
+      if (data && data.status === 'success' && data.fullProject) {
+        // Success — save and reload
+        localStorage.setItem('projectcog_full_project', data.fullProject);
+        localStorage.setItem('projectcog_paid', 'true');
+        localStorage.setItem('projectcog_fetched_ref', pcgRef);
+        localStorage.setItem('projectcog_paid_type', data.projectType || '');
+        localStorage.setItem('projectcog_paid_name', data.studentName || '');
+        window.location.href = window.location.pathname;
+        return;
+      }
+
+      // Got response but no fullProject — retry
+      throw new Error('Empty project received');
+
+    } catch(e) {
+      if (attempt < maxAttempts) {
+        // Wait before retrying
+        const retryEl = document.getElementById('retryStatus');
+        if (retryEl) retryEl.textContent = 'Retrying in 15 seconds... (Attempt ' + attempt + ' of ' + maxAttempts + ')';
+        await new Promise(r => setTimeout(r, retryDelay));
+      } else {
+        // All attempts failed — show support message
+        const statusEl = document.getElementById('fetchStatus');
+        if (statusEl) statusEl.innerHTML =
+          'We tried 5 times but could not load your project.<br><br>' +
+          '<strong style="color:#0F1628">Your payment was received.</strong> Please contact support with your reference:<br><br>' +
+          '<strong style="color:#4B35C8;font-size:16px">' + pcgRef + '</strong><br><br>' +
+          '<a href="https://wa.me/2348111689782?text=Hello, I paid for ProjectCog but my project did not load. My reference is ' + pcgRef + '" ' +
+          'style="display:inline-block;margin-top:12px;padding:12px 24px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-weight:700">' +
+          '📱 WhatsApp Support</a>';
+      }
+    }
+  }
+}
+
+// ── UNLOCK UI AFTER FULL PROJECT DELIVERED ──
+function deliverFullProject(data) {
+  isPaid    = true;
+  fullText  = data.fullProject || data.generatedProject || '';
+
+  localStorage.setItem('projectcog_full_project', fullText);
+  localStorage.setItem('projectcog_paid', 'true');
+
+  const docContent = document.getElementById('docContent');
+  docContent.innerHTML = renderDoc(fullText);
+  docContent.classList.add('full-mode');
+
+  document.getElementById('lockFade').style.display = 'none';
+  document.getElementById('previewBanner').style.display = 'none';
+  document.getElementById('unlockedBanner').style.display = 'flex';
+  document.getElementById('freeTag').style.display  = 'none';
+  document.getElementById('paidTag').style.display  = 'inline-flex';
+  document.getElementById('docTitle').textContent = (TYPE_LABELS[currentType] || 'Academic Project') + ' — Full Project';
+  document.getElementById('cardTitle').textContent = '✅ Project Unlocked';
+  document.getElementById('mainPayBtn').style.display = 'none';
+
+  const fullBlock = document.getElementById('fullDlBlock');
+  fullBlock.classList.add('paid');
+  document.getElementById('fullDlLabel').className = 'dl-block-label unlocked';
+  document.getElementById('fullDlLabel').innerHTML = '<i class="fas fa-unlock"></i> Full Project Download';
+  document.getElementById('fullDlNote').style.display = 'none';
+
+  const wordBtn = document.getElementById('fullWordBtn');
+  wordBtn.className = 'dl-btn dl-word';
+  wordBtn.disabled  = false;
+  wordBtn.innerHTML = '<i class="fas fa-download"></i> Download Project';
+  wordBtn.onclick   = dlFullWord;
+
+  if (currentType === 'final_year_project') {
+    document.getElementById('defenseNotice').style.display = 'block';
+  }
+}
+
+// ── DOWNLOADS ──
+function dlPreviewWord() {
+  if (!previewText) { alert('Preview not loaded yet.'); return; }
+  generateWordDoc(previewText, 'ProjectCog_FreePreview_' + currentType + '.doc');
+}
+
+function dlFullWord() {
+  if (!fullText) { alert('Full project not loaded yet. Please wait.'); return; }
+  generateWordDoc(fullText, 'ProjectCog_FullProject_' + currentType + '.doc');
+}
+
+function generateWordDoc(rawText, filename) {
+  const clean = rawText
+    .replace(/\\n/g, '\n')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/\*/g, '')
+    .replace(/={3,}/g, '')
+    .replace(/#{1,6}\s*/g, '')
+    .replace(/^[-–]{3,}$/gm, '')
+    .trim();
+
+  const wordHtml = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset='utf-8'>
+<style>
+  @page { margin: 1in; }
+  body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 2.0; color: #000; }
+  p { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 2.0; text-align: justify; margin: 0 0 12pt 0; }
+  h1, h2 { font-family: 'Times New Roman', serif; font-size: 12pt; font-weight: bold; text-align: center; text-transform: uppercase; margin: 18pt 0 10pt 0; }
+  h3 { font-family: 'Times New Roman', serif; font-size: 12pt; font-weight: bold; text-align: left; text-transform: uppercase; margin: 14pt 0 8pt 0; }
+</style>
+</head>
+<body>
+${clean.split('\n').map(line => {
+  const t = line.trim();
+  if (!t) return '<p>&nbsp;</p>';
+  if (t === t.toUpperCase() && t.length < 80 && t.length > 2) return `<h2>${t}</h2>`;
+  return `<p>${t}</p>`;
+}).join('\n')}
+</body>
+</html>`;
+
+  const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── SHARE ──
+function shareWA() {
+  const txt = encodeURIComponent('I just used ProjectCog to generate my academic project!\n\nTry it: https://rebornxchange1-ux.github.io/ProJect-Cog/index.html\n\nNigerian students, this is a game changer!');
+  window.open('https://wa.me/?text=' + txt, '_blank');
+}
+function copyLink() {
+  navigator.clipboard.writeText('https://rebornxchange1-ux.github.io/ProJect-Cog/index.html').then(() => alert('Link copied!'));
+}
+
+// ── DEFENSE CHATBOT ──
+function startDefense() {
+  const ps = localStorage.getItem('projectcog_payload');
+  if (ps) {
+    const p = JSON.parse(ps);
+    localStorage.setItem('defense_topic', p.projectTopic || '');
+    localStorage.setItem('defense_dept',  p.department || '');
+  }
+  window.location.href = 'defense.html';
+}
+
+// ── INIT ──
+function init() {
+  // Check Paystack redirect FIRST
+  const urlParams  = new URLSearchParams(window.location.search);
+  const refFromURL = urlParams.get('reference') || urlParams.get('trxref');
+  const pcgFromURL = urlParams.get('pcgref');
+  if (refFromURL) {
+    if (pcgFromURL) {
+      localStorage.setItem('projectcog_pending_ref', pcgFromURL);
+    }
+    fetchFullProject(refFromURL);
+    return;
+  }
+
+  const rs = localStorage.getItem('projectcog_result');
+
+  const alreadyPaid   = localStorage.getItem('projectcog_paid');
+  const savedFull     = localStorage.getItem('projectcog_full_project');
+  const fetchedRef    = localStorage.getItem('projectcog_fetched_ref');
+  const currentResult = rs ? JSON.parse(rs) : {};
+  const currentResultRef = currentResult.reference || '';
+
+  if (alreadyPaid === 'true' && savedFull) {
+    const paidType = localStorage.getItem('projectcog_paid_type') || (rs ? JSON.parse(rs).projectType : 'final_year_project');
+    const paidName = localStorage.getItem('projectcog_paid_name') || '';
+    currentType  = paidType;
+    currentPrice = PRICES[currentType] || 10500;
+    document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
+    document.getElementById('metaName').textContent = paidName || '—';
+    document.getElementById('metaType').textContent = TYPE_LABELS[currentType] || '—';
+    document.getElementById('docTitle').textContent = (TYPE_LABELS[currentType] || 'Academic Project') + ' — Full Project';
+    updateFeats(currentType);
+    deliverFullProject({ status: 'success', fullProject: savedFull });
+    return;
+  }
+
+  if (!rs) { window.location.href = 'generate.html'; return; }
+
+  const data = JSON.parse(rs);
+
+  const ps      = localStorage.getItem('projectcog_payload');
+  const payload = ps ? JSON.parse(ps) : {};
+
+  currentType  = payload.projectType || data.projectType || 'final_year_project';
+  currentPrice = PRICES[currentType] || 10500;
+  previewText  = data.generatedProject || '';
+
+  // FIX: Read reference from payload first (where generate.html now saves it),
+  // then fall back to result data, then to the separately saved pending ref.
+  currentRef = payload.reference || data.reference || localStorage.getItem('projectcog_pending_ref') || '';
+
+  document.getElementById('docTitle').textContent = (TYPE_LABELS[currentType] || 'Academic Project') + ' — Free Preview';
+  document.getElementById('metaName').textContent = payload.studentName || data.studentName || '—';
+  document.getElementById('metaType').textContent = TYPE_LABELS[currentType] || '—';
+  document.getElementById('metaInst').textContent = payload.institutionName || '—';
+  // Show referral discount badge and discounted price if applied
+  if (payload.discountApplied) {
+    const discountAmt = parseInt(payload.discountAmount) || 500;
+    const basePrice = PRICES[currentType] || 10500;
+    currentPrice = basePrice - discountAmt;
+    document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
+    const badge = document.getElementById('discBadge');
+    badge.textContent = 'Referral discount of ₦' + discountAmt.toLocaleString() + ' applied.';
+    badge.classList.add('show');
+  } else {
+    document.getElementById('payAmt').innerHTML = '<sup>₦</sup>' + currentPrice.toLocaleString();
+  }
+
+  updateFeats(currentType);
+  if (previewText) {
+    document.getElementById('docContent').innerHTML = renderDoc(previewText);
+  }
+
+  // No polling needed — Paystack inline callback handles delivery directly
+}
+
+init();
+</script>
+</body>
+</html>
